@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_payIn_out_sum_view"
+    android:layout_width="1025dp"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="100dp"
+    android:orientation="vertical"
+ 
+    >
+
+    <RelativeLayout
+        android:layout_width="1025dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/payIn_out_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+            android:background="#606060"
+            android:text="Cancel"
+            android:textColor="#97DA00"
+            android:textSize="35sp" />
+
+        <Button
+            android:id="@+id/payIn_out_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="#606060"
+            android:text="Save"
+            android:textColor="#97DA00"
+            android:textSize="35sp" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="880dp"
+        android:layout_height="2dp"
+        android:layout_marginLeft="80dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/pop_call_splite" />
+    
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+        <View
+        android:layout_width="2dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="80dp"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/pop_call_splite" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="120dp"
+            android:layout_centerInParent="true"
+            android:layout_alignParentLeft="true"
+            android:text="Amount"
+            android:textSize="25sp" />
+
+        <EditText
+            android:id="@+id/payIn_out_enter_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="100dp"
+            android:background="#636363"
+            android:digits="0123456789."
+            android:hint="Enter Amount"
+            android:textSize="25sp" />
+        <View
+        android:layout_width="2dp"
+        android:layout_height="40dp"
+        android:layout_marginRight="65dp"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/pop_call_splite" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="880dp"
+        android:layout_height="2dp"
+        android:layout_marginLeft="80dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/pop_call_splite" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+       <View
+        android:layout_width="2dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="80dp"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/pop_call_splite" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="120dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:text="Description"
+            android:textSize="25sp" />
+
+        <EditText
+            android:id="@+id/payIn_out_des"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="100dp"
+            android:background="#636363"
+            android:hint="Enter Description"
+            android:textSize="25sp" />
+        <View
+        android:layout_width="2dp"
+        android:layout_height="40dp"
+        android:layout_marginRight="65dp"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/pop_call_splite" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="880dp"
+        android:layout_height="2dp"
+        android:layout_marginLeft="80dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/pop_call_splite" />
+
+    <LinearLayout
+        android:layout_width="1025dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/payIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="380dp"
+            android:background="@drawable/trans_btn"
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="Pay In"
+            android:textSize="25sp" 
+            android:textColor="#ffffff"/>
+
+        <Button
+            android:id="@+id/payOut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/trans_btn"
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="Pay Out"
+            android:textSize="25sp" 
+            android:textColor="#ffffff"/>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:text="payIn/Out History"
+        android:textSize="25sp" />
+
+    <View
+        android:layout_width="1020dp"
+        android:layout_height="2dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/pop_call_splite" />
+
+    <ListView
+        android:id="@+id/pay_history"
+        android:layout_width="wrap_content"
+        android:layout_height="400dp" 
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp">
+    </ListView>
+
+    <View
+        android:layout_width="1020dp"
+        android:layout_height="2dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/pop_call_splite" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="60dp"
+            android:text="Net Cash Paid in"
+            android:textColor="#ffffffff"
+            android:textSize="25sp" />
+
+        <TextView
+            android:id="@+id/net_pay_in_cash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="600dp"
+            android:text="$0.00"
+            android:textColor="#ffffffff"
+            android:textSize="25sp" />
+    </LinearLayout>
+
+</LinearLayout>

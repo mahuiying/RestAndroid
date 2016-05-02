@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" 
+    
+    >
+    <LinearLayout
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="10dp"
+        android:layout_width="380dp"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+     <ImageView
+         
+           android:id="@+id/front_drawer_img"
+           android:layout_width="20dp"
+           android:layout_height="20dp"
+           android:src="@drawable/rightlogo"
+           android:visibility="invisible"
+            />
+    <TextView
+        android:layout_marginLeft="5dp"
+        android:id="@+id/front_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Front Desk Drawer"
+        android:textSize="25sp"/>
+    </LinearLayout>
+        <View
+        android:layout_width="280dp"
+        android:layout_height="2dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/pop_call_splite" />
+    <LinearLayout
+       android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="10dp"
+        android:layout_width="380dp"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+     <ImageView
+         
+           android:id="@+id/lounge_drawer_img"
+           android:layout_width="20dp"
+           android:layout_height="20dp"
+           android:src="@drawable/rightlogo"
+           android:visibility="invisible"
+           
+            />
+    <TextView
+        android:layout_marginLeft="5dp"
+        android:id="@+id/lounge_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lounge Bar Drawer"
+        android:textSize="25sp"/>
+    </LinearLayout>
+     <View
+        android:layout_width="280dp"
+        android:layout_height="2dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/pop_call_splite" />
+    <LinearLayout
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="10dp"
+        android:layout_width="380dp"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+     <ImageView
+         
+           android:id="@+id/dining_drawer_img"
+           android:layout_width="20dp"
+           android:layout_height="20dp"
+           android:src="@drawable/rightlogo"
+           android:visibility="invisible"
+           
+            />
+    <TextView
+        android:layout_marginLeft="5dp"
+        android:id="@+id/dining_drawer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Dining Tables Drawer"
+        android:textSize="25sp"/>
+    </LinearLayout>
+</LinearLayout>

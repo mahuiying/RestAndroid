@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:state_pressed="true"><shap android:shape="rectangle">
+            <corners android:bottomLeftRadius="11dp" android:bottomRightRadius="11dp" android:topLeftRadius="11dp" android:topRightRadius="11dp" />
+
+            <solit android:color="#A6B68D" />
+        </shap></item>
+    <item><shap android:shape="rectangle">
+            <corners android:bottomLeftRadius="11dp" android:bottomRightRadius="11dp" android:topLeftRadius="11dp" android:topRightRadius="11dp" />
+
+            <solit android:color="#6F8251" />
+        </shap></item>
+
+</selector>
