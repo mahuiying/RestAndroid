@@ -1,10 +1,12 @@
 package com.utopia.Adapter;
 
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.UUID;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -17,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.utopia.Dao.sql_SaleRecord;
 import com.utopia.Model.d_Desk;
 import com.utopia.activity.OrdersAcitvity;
 import com.utopia.activity.R;
@@ -109,23 +112,39 @@ public class DeliveryAdapter extends BaseAdapter implements OnClickListener {
 		} else {
 			localAppItem = (AppItem) paramView.getTag();
 		}
+		float money = 0;
 		
-        //标记外卖是否被做 0未全做完  其他已做完 （只是猜侧）/////////////////
+		int customerNo=0;
+		
 		if (lstDate.get(paramInt).getStatetime() == 0) {
 			localAppItem.desk_time.setText(lstDate.get(paramInt).getStarttime()
 					.subSequence(11, 16));
-			String current_time=DateUtils.getDateEN();
-			if(lstDate.get(paramInt).getStarttime().compareTo(current_time)<0){
-				localAppItem.desk_state.setText(lstDate.get(paramInt).getStarttime()
-						.subSequence(11, 16));
+			Cursor m_cursor = (new sql_SaleRecord()).recordlist3("select * from SaleRecord as s1 join saleandpdt as s2" +
+					" on s1.itemNo=s2.salerecordId where deskName='"+
+					lstDate.get(paramInt).getDesk_name()+"' and s2.status1!='Finish'");
+			while(m_cursor.moveToNext()){
+				money += (Float.parseFloat(m_cursor.getString(m_cursor.getColumnIndex("price"))))*(m_cursor.getInt(m_cursor.getColumnIndex("number")));
+			}
+			String current_time=DateUtils.getDateEN();	
+			String sendtime;	
+			if(m_cursor.moveToFirst()){
+			    sendtime=m_cursor.getString(m_cursor.getColumnIndex("createTime"));
+			    customerNo=m_cursor.getInt(m_cursor.getColumnIndex("customerId"));
+			}
+			else
+				sendtime=lstDate.get(paramInt).getStarttime();
+			if(sendtime.compareTo(current_time)>0){
+				localAppItem.desk_state.setText(sendtime.subSequence(11, 16));
 			}else{
 			      localAppItem.desk_state.setText("Ordered");
 			}
+			
 			if (done_count % 4 != 0) {// 留空行
 				++done_count;
 				lstDate.add(paramInt, new d_Desk(0, "0", "0", "0", "0", 2,
 						"2014-12-12 12:12:12", 0, 0, 0, 0, 0));
 			}
+			m_cursor.close();
 		} else {// done
 			++done_count;
 			//localAppItem.desk_time.setText("Done");
@@ -138,9 +157,16 @@ public class DeliveryAdapter extends BaseAdapter implements OnClickListener {
 			paramView.setVisibility(View.INVISIBLE);
 			
 		}
-		localAppItem.ll.setTag(lstDate.get(paramInt));
 		localAppItem.waiter_name.setText(lstDate.get(paramInt).getS_account());
-		localAppItem.desk_money.setText("$21.5");
+		if(customerNo!=0){
+		    Cursor m_cursor1 = (new sql_SaleRecord()).recordlist3("select Name from contact where id="+customerNo);
+		    localAppItem.waiter_name.setText(m_cursor1.getInt(0));
+		}
+		localAppItem.ll.setTag(lstDate.get(paramInt));
+		
+		//localAppItem.desk_money.setText("$21.5");
+		
+		localAppItem.desk_money.setText("$"+ new DecimalFormat("0.00").format(money));
 		//localAppItem.desk_state.setText(lstDate.get(paramInt).getState());
 		if(lstDate.get(paramInt).getDesk_name().length()>7){
 			localAppItem.desk_name.setText(lstDate.get(paramInt).getDesk_name().substring(0, 7));

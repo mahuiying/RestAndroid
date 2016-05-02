@@ -22,16 +22,16 @@ import com.utopia.Model.d_Staff;
 import com.utopia.activity.R;
 
 public class Constant {
-	
-	public static d_Staff currentStaff;//记录当前登录的员工信息
-	
-	public static String DATABASE_FILENAME = "food.db";//记录数据库名称
-	public static String DATABASE_PATH = "";//记录数据库路径
-	public static SQLiteDatabase db;//数据库
-	public static String table_id;//y记录当前桌号
-	public static String lastTime = "2015-01-01 00:00:00";//记录数据库中最后更新时间
-	public static int versionCode = 0;//服务器端版本
-	public static View currentView = null;//当前编辑的view
+
+	public static d_Staff currentStaff;// 记录当前登录的员工信息
+
+	public static String DATABASE_FILENAME = "food.db";// 记录数据库名称
+	public static String DATABASE_PATH = "";// 记录数据库路径
+	public static SQLiteDatabase db;// 数据库
+	public static String table_id;// y记录当前桌号
+	public static String lastTime = "2015-01-01 00:00:00";// 记录数据库中最后更新时间
+	public static int versionCode = 0;// 服务器端版本
+	public static View currentView = null;// 当前编辑的view
 	public static String DataTime;
 	public static String NewDataTime;
 	public static String NewPicTime;
@@ -40,8 +40,7 @@ public class Constant {
 	public static boolean b_updata;
 	public static boolean b_uppic;
 	public static String bill_id;
-	
-	
+
 	public static String desk_name;
 	public static int dlg_logintype;
 	public static float foodnumcount;
@@ -60,32 +59,33 @@ public class Constant {
 	public static String syspass;
 	public static String sysuserId;
 	public static String sysusername;
-	
+
 	public static String printerAddress;
 	public static String userCode; // 操作者Id
 	public static String cashierId; // 收银机id
 	public static float sumTotal; // 打印机 费用合计
-	public static float tip ; //小费
-	
-	public static String schedule="";//记录桌子的所有菜发送到厨房的时间
-	public static float due ; 
-	public static float paid ; 
-	public static String Area ; //记录不同区域 ， tables  liquor bar ， sushi bar， take out， delivery
+	public static float tip; // 小费
+
+	public static String schedule = "";// 记录桌子的所有菜发送到厨房的时间
+	public static float due;
+	public static float paid;
+	public static String Area; // 记录不同区域 ， tables liquor bar ， sushi bar， take
+								// out， delivery
 	public static DecimalFormat decimalFormat = new DecimalFormat("0.00");// 构造方法的字符格式这里如果小数不足2位,会以0补足.
-	
-	public static d_SaleRecord currentSR ; 
+
+	public static d_SaleRecord currentSR;
 	public static String clockInTime = "2015-01-01 00:00:00";
 
-	//public static List<d_SaleRecord> allSaleRecord;
-	public static List<d_SaleRecord> billSaleRecord ; 
-	public static List<d_SaleRecord> allBill ; 
-	public static int position  ;
-    
-	public static boolean pop = false; 
+	// public static List<d_SaleRecord> allSaleRecord;
+	public static List<d_SaleRecord> billSaleRecord;
+	public static List<d_SaleRecord> allBill;
+	public static int position;
+
+	public static boolean pop = false;
 	static {
-		position = 0  ;
-		//allSaleRecord = new ArrayList<d_SaleRecord>();
-		billSaleRecord  = new ArrayList<d_SaleRecord>();
+		position = 0;
+		// allSaleRecord = new ArrayList<d_SaleRecord>();
+		billSaleRecord = new ArrayList<d_SaleRecord>();
 		allBill = new ArrayList<d_SaleRecord>();
 		pad_type = Boolean.valueOf(false);
 		list_type = Boolean.valueOf(false);
@@ -122,7 +122,7 @@ public class Constant {
 		paid = (float) 0.0;
 		printerAddress = "";
 		Area = "Tables";
-		
+
 	}
 
 	private void CreateFromRawDbFiles(File[] paramArrayOfFile,
@@ -191,6 +191,7 @@ public class Constant {
 		return db;
 	}
 
+	@SuppressWarnings("deprecation")
 	public static BitmapDrawable readBitMapDrawable(Context paramContext,
 			int paramInt) {
 		BitmapFactory.Options localOptions = new BitmapFactory.Options();
@@ -202,6 +203,7 @@ public class Constant {
 				.getResources().openRawResource(paramInt), null, localOptions));
 	}
 
+	@SuppressWarnings("deprecation")
 	public static BitmapDrawable readBitMapFile(Context paramContext,
 			String paramString) {
 		BitmapFactory.Options localOptions = new BitmapFactory.Options();
@@ -218,6 +220,7 @@ public class Constant {
 			File localFile = new File(DATABASE_PATH);
 			if (!localFile.exists())
 				localFile.mkdir();
+
 			if (!new File(getDatabaseFilename()).exists()) {
 				copydb(paramContext, R.raw.food, String.valueOf(DATABASE_PATH)
 						+ "/food", 125952);

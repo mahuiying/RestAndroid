@@ -11,7 +11,8 @@ public class Parameter implements Serializable, Comparable<Parameter>
 	
 	private String name;//参数名
 	private String value;//参数值
-
+   
+    
 	public Parameter()
 	{
 		super();
@@ -23,7 +24,8 @@ public class Parameter implements Serializable, Comparable<Parameter>
 		this.name = name;
 		this.value = value;
 	}
-
+    
+	
 	public String getName()
 	{
 		return name;

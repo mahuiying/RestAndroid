@@ -1,7 +1,5 @@
 package com.utopia.activity;
 
-import java.util.Date;
-
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;

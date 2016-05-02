@@ -45,7 +45,7 @@ public class CleanTableActivity extends BaseActivity implements
 		View.OnClickListener {
 	public PayBillTotalAdapter<d_SaleRecord> sladapter;
 	private ListView localListView;
-	private TextView tip; // 小费
+	// private TextView tip; // 小费
 	private boolean isSplit = false;
 	// 添加按钮
 	private MyDialog recoveryDialog;
@@ -60,7 +60,7 @@ public class CleanTableActivity extends BaseActivity implements
 	d_Desk currentDesk = new d_Desk();
 	d_Bill tBill = new d_Bill();
 	private TextView sum_total, totalAndTips, tips;
-	private float tax;
+	// private float tax;
 	private float pay_bill_tips = (float) 0.0;
 	private float subtotal = (float) 0.00;
 	private Context context;
@@ -223,8 +223,9 @@ public class CleanTableActivity extends BaseActivity implements
 		List<d_SaleRecord> d_SaleRecords = new ArrayList<d_SaleRecord>();
 
 		Cursor m_CallCursor, sub_CallCursor;
+		//,,,,,,,,,
 		m_CallCursor = new sql_SaleRecord()
-				.recordlist3("select * from SaleRecord as a JOIN saleandpdt as b ON a.itemNo=b.salerecordId where a.desk_name=='"
+				.recordlist3("select * from SaleRecord as a JOIN saleandpdt as b ON a.itemNo=b.salerecordId where a.desk_name='"
 						+ Constant.table_id + "' and b.status1!='Finish'");
 		while (m_CallCursor.moveToNext()) {
 			d_SaleRecord ds = new d_SaleRecord();
@@ -237,8 +238,8 @@ public class CleanTableActivity extends BaseActivity implements
 			ds.setNumber((int) Float.valueOf(
 					m_CallCursor.getString(m_CallCursor
 							.getColumnIndex("number"))).floatValue());
-			ds.setItemNo(Integer.parseInt(m_CallCursor.getString(m_CallCursor
-					.getColumnIndex("itemNo"))));
+			ds.setItemNo(m_CallCursor.getString(m_CallCursor
+					.getColumnIndex("itemNo")));
 
 			try {
 				sub_CallCursor = new sql_SaleRecord()
@@ -268,14 +269,16 @@ public class CleanTableActivity extends BaseActivity implements
 
 		Cursor m_CallCursor, sub_CallCursor;
 		m_CallCursor = new sql_SaleRecord()
-				.recordlist3("select a.pdtName,a.price,a.number,s.itemNo,c.customNo from SaleRecord as s join Customer as c on s.itemNo=c.ItemNo" +
-						"  SaleRecord as s join  saleandpdt as a on s.itemNo=a.salerecordId where s.desk_name = '"
+				.recordlist3("select a.pdtName,a.price,a.number,s.itemNo,c.customNo from SaleRecord as s join Customer as c on s.itemNo=c.ItemNo"
+						+ "  SaleRecord as s join  saleandpdt as a on s.itemNo=a.salerecordId where s.desk_name = '"
 						+ Constant.table_id
-						+ "' and a.status1!='Finish' and c.customNo='" + i + "'");
+						+ "' and a.status1!='Finish' and c.customNo='"
+						+ i
+						+ "'");
 		while (m_CallCursor.moveToNext()) {
 			d_SaleRecord ds = new d_SaleRecord();
-			ds.setItemNo(Integer.parseInt(m_CallCursor.getString(m_CallCursor
-					.getColumnIndex("itemNo"))));
+			ds.setItemNo(m_CallCursor.getString(m_CallCursor
+					.getColumnIndex("itemNo")));
 			ds.setPdtName(m_CallCursor.getString(m_CallCursor
 					.getColumnIndex("pdtName")));
 			ds.setPrice(Float
@@ -285,12 +288,12 @@ public class CleanTableActivity extends BaseActivity implements
 			ds.setNumber((int) Float.valueOf(
 					m_CallCursor.getString(m_CallCursor
 							.getColumnIndex("number"))).floatValue());
-//			ds.setItemNo(Integer.parseInt(m_CallCursor.getString(m_CallCursor
-//					.getColumnIndex("ItemNo"))));
+			// ds.setItemNo(Integer.parseInt(m_CallCursor.getString(m_CallCursor
+			// .getColumnIndex("ItemNo"))));
 
 			ds.setCustomerNo(Integer.parseInt(m_CallCursor
 					.getString(m_CallCursor.getColumnIndex("customNo"))));
-			ds.setBILLID(i + "");// 不要删
+			// ds.setBILLID(i + "");// 不要删
 			try {
 				sub_CallCursor = new sql_SaleRecord()
 						.recordlist3("select count(*) from Customer  where  ItemNo='"
@@ -361,9 +364,10 @@ public class CleanTableActivity extends BaseActivity implements
 							Constant.table_id, 0, "", 0, 0, 0, 0, 0);
 					sql_SaleRecord ss = new sql_SaleRecord();
 					ss.update("Finish", Constant.table_id);
-					//new JsonResolveUtils(context).sendSaleRecords(getSaleRecordsAll());
-					boolean flag =  new JsonResolveUtils(CleanTableActivity.this)
-					.setDesks(desk);
+					// new
+					// JsonResolveUtils(context).sendSaleRecords(getSaleRecordsAll());
+					boolean flag = new JsonResolveUtils(CleanTableActivity.this)
+							.setDesks(desk);
 					Thread.sleep(1000);
 					return flag;
 				} catch (InterruptedException e) {
@@ -395,11 +399,14 @@ public class CleanTableActivity extends BaseActivity implements
 		for (int i = 0; i < datas.size(); i++) {
 			t_view = views.get(i);
 			float pay = Float.parseFloat(((TextView) t_view
-					.findViewById(R.id.bill_pay)).getText().toString().replace('$', '0'));
+					.findViewById(R.id.bill_pay)).getText().toString()
+					.replace('$', '0'));
 			float due = Float.parseFloat(((TextView) t_view
-					.findViewById(R.id.bill_due)).getText().toString().replace('$', '0'));
+					.findViewById(R.id.bill_due)).getText().toString()
+					.replace('$', '0'));
 			float tips = Float.parseFloat(((TextView) t_view
-					.findViewById(R.id.bill_tips)).getText().toString().replace('$', '0'));
+					.findViewById(R.id.bill_tips)).getText().toString()
+					.replace('$', '0'));
 			tBill = new d_Bill(Md5.md5(Snippet.generateID()),
 					Constant.currentStaff.getS_name(), due, payStyle[i], pay,
 					DateUtils.getDateEN(), datas.get(i).size(), tips);

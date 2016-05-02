@@ -5,14 +5,15 @@ import java.util.ArrayList;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.utopia.Model.d_SaleRecord;
 import com.utopia.utils.Constant;
 import com.utopia.utils.DateUtils;
 
 public class sql_SaleRecord {
-	private static final String String = null;
-	SQLiteDatabase db;
+	// private static final String String = null;
+	SQLiteDatabase db = null;
 
 	public sql_SaleRecord() {
 		if (db == null)
@@ -26,7 +27,10 @@ public class sql_SaleRecord {
 
 	public void clearBill(String paramString) {
 		String str = "select itemNo from SaleRecord where deskName='"
-				+ paramString + "'";
+				+ paramString
+				+ "' and"
+				+ " createTime=(select max( createTime ) from SaleRecord where deskName='"
+				+ paramString + "')";
 		Cursor localCursor = this.db.rawQuery(str, null);
 		localCursor.moveToFirst();
 		int itemNo = localCursor.getInt(0);
@@ -52,7 +56,10 @@ public class sql_SaleRecord {
 
 	public void deleteNotSent(String desk_name, String status) {
 		String str = "select itemNo from SaleRecord where deskName='"
-				+ desk_name + "'";
+				+ desk_name
+				+ "' and "
+				+ " createTime=(select max( createTime ) from SaleRecord where deskName='"
+				+ desk_name + "')";
 		Cursor localCursor = this.db.rawQuery(str, null);
 		localCursor.moveToFirst();
 		int itemNo = localCursor.getInt(0);
@@ -70,11 +77,13 @@ public class sql_SaleRecord {
 		String str = "select itemNo from SaleRecord where deskName='"
 				+ desk_name + "'";
 		Cursor localCursor = this.db.rawQuery(str, null);
-		localCursor.moveToFirst();
-		int itemNo = localCursor.getInt(0);
+		while (localCursor.moveToNext()) {
+			int itemNo = localCursor.getInt(0);
+
+			this.db.execSQL("delete from saleandpdt where salerecordId=?",
+					new Object[] { itemNo });
+		}
 		localCursor.close();
-		this.db.execSQL("delete from saleandpdt where salerecordId=?",
-				new Object[] { itemNo });
 		this.db.execSQL("delete from SaleRecord where deskName=?",
 				new Object[] { desk_name });
 		// this.db.execSQL("delete from SaleRecord where desk_name=?",
@@ -82,10 +91,21 @@ public class sql_SaleRecord {
 
 	}
 
+	/*
+	 * 删除指定的某一道菜
+	 */
+	public void deletePreSelect(int id) {
+		db.execSQL("delete from saleandpdt where id = " + id);
+	}
+
 	public void delete(String desk_name, String pdtName) {
 
 		String str = "select itemNo from SaleRecord where deskName='"
-				+ desk_name + "'";
+				+ desk_name
+				+ "' and "
+				+ " createTime=(select max( createTime ) from SaleRecord where deskName='"
+				+ desk_name + "')";
+
 		Cursor localCursor = this.db.rawQuery(str, null);
 		localCursor.moveToFirst();
 		int itemNo = localCursor.getInt(0);
@@ -102,14 +122,11 @@ public class sql_SaleRecord {
 	 * Order Form 界面 总价
 	 */
 	public float getOneOrderTotalMoney(String deskName) {
-		String str1 = "select itemNo from SaleRecord where deskName='"
-				+ deskName + "'";
-		Cursor localCursor = this.db.rawQuery(str1, null);
-		localCursor.moveToFirst();
-		int itemNo = localCursor.getInt(0);
-		localCursor.close();
-		String str2 = "select ifnull(sum(number*Price),0.0) from saleandpdt where salerecordId="
-				+ itemNo + "and status1!='Finish'";
+
+		String str2 = "select ifnull(sum(number*Price),0.0) from saleandpdt as s1 join SaleRecord as s2 on "
+				+ "s1.salerecordId=s2.itemNo where deskName='"
+				+ deskName
+				+ "' and status1!='Finish'";
 		Cursor localCursor1 = this.db.rawQuery(str2, null);
 		localCursor1.moveToFirst();
 		float f = localCursor1.getFloat(0);
@@ -121,14 +138,11 @@ public class sql_SaleRecord {
 	 * Order Form 界面 总数
 	 */
 	public float getOneOrderTotalNum(String desk_name) {
-		String str1 = "select itemNo from SaleRecord where deskName='"
-				+ desk_name + "'";
-		Cursor localCursor = this.db.rawQuery(str1, null);
-		localCursor.moveToFirst();
-		int itemNo = localCursor.getInt(0);
-		localCursor.close();
-		String str = "select ifnull(sum(number),0.0) from saleandpdt where salerecordId="
-				+ itemNo + "and status1!='Finish'";
+
+		String str = "select ifnull(sum(number*Price),0.0) from saleandpdt as s1 join SaleRecord as s2 on "
+				+ "s1.salerecordId=s2.itemNo where deskName='"
+				+ desk_name
+				+ "' and status1!='Finish'";
 		Cursor localCursor1 = this.db.rawQuery(str, null);
 		localCursor1.moveToFirst();
 		float f = localCursor1.getFloat(0);
@@ -140,14 +154,9 @@ public class sql_SaleRecord {
 	 * Order Form 界面 总数
 	 */
 	public int getNotCheckedNum() {
-		String str1 = "select itemNo from SaleRecord where deskName='"
-				+ Constant.table_id + "'";
-		Cursor localCursor1 = this.db.rawQuery(str1, null);
-		localCursor1.moveToFirst();
-		int itemNo = localCursor1.getInt(0);
-		localCursor1.close();
-		String str = "select count(*) from saleandpdt where salerecordId="
-				+ itemNo + "and status1!='Finish' and status1!='Doned'";
+
+		String str = "select count(*) from saleandpdt as s1 join SaleRecord as s2 on s1.salerecordId=s2.itemNo"
+				+ " where s1.status1!='Finish' and s1.status1!='Doned'";
 		Cursor localCursor = db.rawQuery(str, null);
 		localCursor.moveToFirst();
 		int count = localCursor.getInt(0);
@@ -157,29 +166,34 @@ public class sql_SaleRecord {
 
 	// 得到订单总额 消费合计
 	public float sumTotal(String desk_name) {
-		String str1 = "select itemNo from SaleRecord where deskName='"
-				+ desk_name + "'";
-		Cursor localCursor1 = this.db.rawQuery(str1, null);
-		localCursor1.moveToFirst();
-		int itemNo = localCursor1.getInt(0);
-		localCursor1.close();
+
 		float mSumTotal = (float) 0.0;
 		float mSum = (float) 0.0;
-		String str = "select * from saleandpdt where salerecordId='" + itemNo
-				+ "' and status1!='Finish'";
+		String str = "select * from saleandpdt as s1 join SaleRecord as s2 on"
+				+ " s1.salerecordId = s2.itemNo where s2.deskName='"
+				+ desk_name + "' and s1.status1!='Finish'";
+		Log.i("dingdan",
+				"select * from saleandpdt as s1 join SaleRecord as s2 on"
+						+ " s1.salerecordId=s2.itemNo where s2.deskName='"
+						+ desk_name + "' and s1.status1!='Finish'");
 		Cursor localCursor = this.db.rawQuery(str, null);
+		int i = 0;
 		while (localCursor.moveToNext()) {
+			String[] columnNames = localCursor.getColumnNames();
+
+			Log.i("columnNames", columnNames[i] + " ");
+
 			mSum = Float.valueOf(
 					localCursor.getString(localCursor.getColumnIndex("price")))
 					.floatValue()
 					* (int) Float.valueOf(
 							localCursor.getString(localCursor
 									.getColumnIndex("number"))).floatValue();
-			// * Float.valueOf(
-			// localCursor.getString(localCursor
-			// .getColumnIndex("Discount"))).floatValue();
 			mSumTotal += mSum;
+
+			Log.i("tag", "msumTotal" + i++ + "=" + mSum);
 		}
+		localCursor.close();
 		return mSumTotal;
 	}
 
@@ -203,7 +217,26 @@ public class sql_SaleRecord {
 									.getColumnIndex("rebate"))).floatValue();
 			mSumTotal += mSum;
 		}
+		localCursor.close();
 		return mSumTotal;
+	}
+
+	// 由桌子名称获得当前该桌子消费记录的id(唯一标识的序号)
+	public String getDeskId(String desk_name) {
+		String id;
+
+		Cursor localCursor = this.db
+				.rawQuery(
+						"select itemNo from SaleRecord where deskName=? and"
+								+ " createTime=(select max( createTime ) from SaleRecord where deskName==?)",
+						new String[] { desk_name, desk_name });
+		if (localCursor.moveToFirst()) {
+			id = localCursor.getString(0);
+			localCursor.close();
+		} else {
+			id = "";
+		}
+		return id;
 	}
 
 	// 得到该桌子上未发送的所有的菜的信息
@@ -234,7 +267,7 @@ public class sql_SaleRecord {
 					.getColumnIndex("rebate")));
 			locald_SaleRecord.setCreateTime(localCursor.getString(localCursor
 					.getColumnIndex("createTime1")));
-			locald_SaleRecord.setStatus(localCursor.getString(localCursor
+			locald_SaleRecord.setStatus1(localCursor.getString(localCursor
 					.getColumnIndex("status1")));
 			locald_SaleRecord.setDesk_name(localCursor.getString(localCursor
 					.getColumnIndex("deskName")));
@@ -248,7 +281,7 @@ public class sql_SaleRecord {
 					.getColumnIndex("waiter")));
 			locald_SaleRecord.setTax(localCursor.getFloat(localCursor
 					.getColumnIndex("tax")));
-			locald_SaleRecord.setItemNo(localCursor.getInt(localCursor
+			locald_SaleRecord.setItemNo(localCursor.getString(localCursor
 					.getColumnIndex("itemNo")));
 			locald_SaleRecord.setPriority(localCursor.getInt(localCursor
 					.getColumnIndex("priority")));
@@ -263,15 +296,17 @@ public class sql_SaleRecord {
 		ArrayList<d_SaleRecord> localArrayList = new ArrayList<d_SaleRecord>();
 		Cursor localCursor = this.db
 				.rawQuery(
-						"select * from SaleRecord as a JOIN saleandpdt as b ON a.itemNo=b.salerecordId where a.desk_name==? and b.status1!='Finish'",
-						new String[] { desk_name });
+						"select * from SaleRecord as a JOIN saleandpdt as b ON a.itemNo=b.salerecordId where a.deskName=? and b.status1!='Finish'"
+								+ " and createTime=(select max( createTime ) from SaleRecord where deskName=?)",
+						new String[] { desk_name, desk_name });
 		while (localCursor.moveToNext()) {
 			d_SaleRecord locald_SaleRecord = new d_SaleRecord();
 			// locald_SaleRecord.setPayId(localCursor.getString(localCursor
 			// .getColumnIndex("PayId")));
 			// locald_SaleRecord.setBILLID(localCursor.getString(localCursor
 			// .getColumnIndex("BILLID")));
-
+			locald_SaleRecord.setId(localCursor.getInt(localCursor
+					.getColumnIndex("id")));
 			locald_SaleRecord.setPdtCODE(localCursor.getString(localCursor
 					.getColumnIndex("pdtCode")));
 			locald_SaleRecord.setPdtName(localCursor.getString(localCursor
@@ -286,7 +321,7 @@ public class sql_SaleRecord {
 					.getColumnIndex("rebate")));
 			locald_SaleRecord.setCreateTime(localCursor.getString(localCursor
 					.getColumnIndex("createTime1")));
-			locald_SaleRecord.setStatus(localCursor.getString(localCursor
+			locald_SaleRecord.setStatus1(localCursor.getString(localCursor
 					.getColumnIndex("status1")));
 			locald_SaleRecord.setDesk_name(localCursor.getString(localCursor
 					.getColumnIndex("deskName")));
@@ -295,24 +330,22 @@ public class sql_SaleRecord {
 			locald_SaleRecord.setOtherSpecNo2(localCursor.getString(localCursor
 					.getColumnIndex("otherspec2")));
 			locald_SaleRecord.setOtherSpec(localCursor.getString(localCursor
-					.getColumnIndex("otherSpec0")));
+					.getColumnIndex("otherspec0")));
 			locald_SaleRecord.setWaiter(localCursor.getString(localCursor
 					.getColumnIndex("waiter")));
 			locald_SaleRecord.setTax(localCursor.getFloat(localCursor
 					.getColumnIndex("tax")));
-			locald_SaleRecord.setItemNo(localCursor.getInt(localCursor
+			locald_SaleRecord.setItemNo(localCursor.getString(localCursor
 					.getColumnIndex("itemNo")));
 			locald_SaleRecord.setPriority(localCursor.getInt(localCursor
 					.getColumnIndex("priority")));
+			locald_SaleRecord.setContactNumber(localCursor.getInt(localCursor
+					.getColumnIndex("contactNumber")));
 			localArrayList.add(locald_SaleRecord);
 		}
 		localCursor.close();
 		return localArrayList;
 	}
-
-	// public Cursor recordlist2(String paramString) {
-	// return db.rawQuery("select * from SaleRecord order by ItemNo", null);
-	// }
 
 	public Cursor recordlist3(String paramString) {
 		/*
@@ -346,79 +379,6 @@ public class sql_SaleRecord {
 	// return localArrayList;
 	// }
 
-	public void save(d_SaleRecord paramd_SaleRecord) {
-		Object[] arrayOfObject = new Object[16];
-		arrayOfObject[0] = paramd_SaleRecord.getPdtCODE();
-		arrayOfObject[1] = paramd_SaleRecord.getPdtName();
-		arrayOfObject[2] = paramd_SaleRecord.getPrice();
-		arrayOfObject[3] = paramd_SaleRecord.getBILLID();
-		arrayOfObject[4] = paramd_SaleRecord.getNumber();
-		arrayOfObject[5] = paramd_SaleRecord.getOtherSpec();
-		arrayOfObject[6] = paramd_SaleRecord.getStatus();
-		arrayOfObject[7] = paramd_SaleRecord.getOtherSpecNo1();
-		arrayOfObject[8] = paramd_SaleRecord.getOtherSpecNo2();
-		arrayOfObject[9] = paramd_SaleRecord.getDesk_name();
-		arrayOfObject[10] = paramd_SaleRecord.getCreateTime();
-		arrayOfObject[11] = paramd_SaleRecord.getWaiter();
-		arrayOfObject[12] = paramd_SaleRecord.getTax();
-		arrayOfObject[13] = 1;
-		arrayOfObject[14] = paramd_SaleRecord.getCloseTime();
-		arrayOfObject[15] = paramd_SaleRecord.getCustomerNo();
-		Cursor localCursor = this.db
-				.rawQuery(
-						"select * from SaleRecord as s1 join saleandpdt as s2 on s1.itemNo=s2.salerecordId"
-								+ "where pdtCode='"
-								+ paramd_SaleRecord.getPdtCODE()
-								+ "' and deskName='"
-								+ paramd_SaleRecord.getDesk_name()
-								+ "' and status1=='Not Sent'", null);
-		String str1 = "select itemNo from SaleRecord where deskName='"
-				+ paramd_SaleRecord.getDesk_name() + "'";
-		Cursor localCursor1 = this.db.rawQuery(str1, null);
-		localCursor1.moveToFirst();
-		int itemNo = localCursor1.getInt(0);
-		localCursor1.close();
-		if (localCursor.moveToNext()) {
-			db.execSQL("update SaleRecord set waiter=? where deskName=?",
-					new Object[] { paramd_SaleRecord.getDesk_name() });
-			db.execSQL(
-					"UPDATE saleandpdt SET otherspec0=?, otherspec1 = ? , otherspec2 = ?  WHERE salerecordId=? and pdtCode=?",
-					new Object[] { paramd_SaleRecord.getOtherSpec(),
-							paramd_SaleRecord.getOtherSpecNo1(),
-							paramd_SaleRecord.getOtherSpecNo2(), itemNo,
-							paramd_SaleRecord.getPdtCODE() });
-		} else {
-			Cursor localCursor0 = this.db.rawQuery(
-					"select * from SaleRecord where  deskName='"
-							+ paramd_SaleRecord.getDesk_name()
-							+ "' and itemNo='" + paramd_SaleRecord.getItemNo()
-							+ "'", null);
-			if (localCursor0.moveToNext()) {
-				db.execSQL(
-						"insert into saleandpdt(pdtCode,pdtName,price,number,otherspec0,otherspec1,"
-								+ "otherspec2,createTime1,closeTime1,status1) values(?,?,?,?,?,?,?,?,?,?)",
-						new Object[] { paramd_SaleRecord.getPdtCODE(),
-								paramd_SaleRecord.getPdtName(),
-								paramd_SaleRecord.getPrice(),
-								paramd_SaleRecord.getNumber(),
-								paramd_SaleRecord.getOtherSpec(),
-								paramd_SaleRecord.getOtherSpecNo1(),
-								paramd_SaleRecord.getOtherSpecNo2(),
-								paramd_SaleRecord.getCreateTime(),
-								paramd_SaleRecord.getCloseTime(),
-								paramd_SaleRecord.getStatus() });
-			} else {
-				db.execSQL(
-						"INSERT INTO SaleRecord(deskName,waiter,tax, rebate) values(?,?,?,?)",
-						new Object[] { paramd_SaleRecord.getDesk_name(),
-								paramd_SaleRecord.getWaiter(),
-								paramd_SaleRecord.getTax(),
-								paramd_SaleRecord.getDiscount() });
-			}
-		}
-		// log();
-	}
-
 	// public void log() {
 	// Cursor localCursor = this.db
 	// .rawQuery("select * from SaleRecord ", null);
@@ -430,46 +390,6 @@ public class sql_SaleRecord {
 	//
 	// }
 
-	// public void saveInit(d_SaleRecord paramd_SaleRecord) {
-	// Object[] arrayOfObject = new Object[16];
-	// arrayOfObject[0] = paramd_SaleRecord.getPdtCODE();
-	// arrayOfObject[1] = paramd_SaleRecord.getPdtName();
-	// arrayOfObject[2] = paramd_SaleRecord.getPrice();
-	// arrayOfObject[3] = paramd_SaleRecord.getBILLID();
-	// arrayOfObject[4] = paramd_SaleRecord.getNumber();
-	// arrayOfObject[5] = paramd_SaleRecord.getOtherSpec();
-	// arrayOfObject[6] = paramd_SaleRecord.getStatus();
-	// arrayOfObject[7] = paramd_SaleRecord.getOtherSpecNo1();
-	// arrayOfObject[8] = paramd_SaleRecord.getOtherSpecNo2();
-	// arrayOfObject[9] = paramd_SaleRecord.getDesk_name();
-	// arrayOfObject[10] = paramd_SaleRecord.getCreateTime();
-	// arrayOfObject[11] = paramd_SaleRecord.getWaiter();
-	// arrayOfObject[12] = paramd_SaleRecord.getTax();
-	// arrayOfObject[13] = 1;
-	// arrayOfObject[14] = paramd_SaleRecord.getCloseTime();
-	// arrayOfObject[15] = paramd_SaleRecord.getItemNo();
-	// Cursor localCursor = this.db.rawQuery(
-	// "select * from SaleRecord where PdtCODE='"
-	// + paramd_SaleRecord.getPdtCODE() + "' and desk_name='"
-	// + paramd_SaleRecord.getDesk_name()
-	// + "' and status=='Not Sent'", null);
-	// if (localCursor.moveToNext()) {
-	// db.execSQL(
-	// "UPDATE SaleRecord SET number=number+1 ,OtherSpec=?, OtherSpecNo1 = ? , OtherSpecNo2 = ? , Waiter = ? WHERE desk_name=? and PdtCODE=?",
-	// new Object[] { arrayOfObject[5],
-	// paramd_SaleRecord.getOtherSpecNo1(),
-	// paramd_SaleRecord.getOtherSpecNo2(),
-	// paramd_SaleRecord.getWaiter(),
-	// paramd_SaleRecord.getDesk_name(),
-	// paramd_SaleRecord.getPdtCODE() });
-	// } else {
-	// db.execSQL(
-	// "INSERT INTO SaleRecord(PdtCODE,PdtName,Price,BILLID,number,OtherSpec,status,OtherSpecNo1,OtherSpecNo2,desk_name,CreateTime,Waiter,tax , Discount,closeTime,ItemNo) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-	//
-	// arrayOfObject);
-	// }
-	// }
-
 	public String getTransactions() {
 		int number = 0;
 		Cursor cursor = db
@@ -478,7 +398,7 @@ public class sql_SaleRecord {
 								+ " where s1.waiter = '"
 								+ Constant.currentStaff.getS_account()
 								+ "'group by s2.closeTime1", null);
-		number = cursor.getCount();
+		number = cursor.getCount(); // 获得所查询信息的条数
 		cursor.close();
 		return number + "";
 	}
@@ -521,7 +441,9 @@ public class sql_SaleRecord {
 	// 更新该餐桌 时间 ， 结账时间 。
 	public void update_time(String desk_name) {
 		String str = "select itemNo from SaleRecord where deskName='"
-				+ desk_name + "'";
+				+ desk_name
+				+ "' and createTime=(select max( createTime ) from SaleRecord where "
+				+ "deskName='" + desk_name + "')";
 		Cursor cursor = db.rawQuery(str, null);
 		cursor.moveToFirst();
 		int itemNo = cursor.getInt(0);
@@ -560,48 +482,52 @@ public class sql_SaleRecord {
 	 * 更新数据库 ， 使status为done , 更新时间 。
 	 */
 	public void update(String done, String closeTime, String PdtName,
-			String desk_name) {
-		String str = "select itemNo from SaleRecord where deskName='"
-				+ desk_name + "'";
-		Cursor cursor = db.rawQuery(str, null);
-		cursor.moveToFirst();
-		int itemNo = cursor.getInt(0);
-		cursor.close();
+			String itemNo, String createTime) {
+
 		SQLiteDatabase localSqliteDatebase = this.db;
 		localSqliteDatebase
 				.execSQL(
-						"update saleandpdt set status1 = ? , closeTime1 = ? where  pdtName=? and salerecordId=?",
-						new Object[] { done, closeTime, PdtName, itemNo });
+						"update saleandpdt set status1 = ? , closeTime1 = ? where  pdtName=? and salerecordId=?"
+								+ " and createTime1=?", new Object[] { done,
+								closeTime, PdtName, itemNo, createTime });
+		localSqliteDatebase.close();
 	}
 
 	/*
-	 * 更新数据库 ， 使status为done , 更新时间 。
+	 * 更新数据库 ， 使status为doned , 更新时间 。
 	 */
 	public void update1(String done, String closeTime, String PdtName,
-			String desk_name, String BILLID, String ItemNo, String createTime) {
+			String desk_name, int BILLID, String ItemNo, String createTime) {
 
-		String str = "select itemNo from SaleRecord where deskName='"
-				+ desk_name + "'";
-		Cursor cursor = db.rawQuery(str, null);
-		cursor.moveToFirst();
-		int itemNo = cursor.getInt(0);
-		cursor.close();
+		// String str = "select itemNo from SaleRecord where deskName='"
+		// + desk_name +
+		// "' and createTime=(select max( createTime ) from SaleRecord where " +
+		// "deskName='"+ desk_name +"')";
+		// Cursor cursor = db.rawQuery(str, null);
+		// cursor.moveToFirst();
+		// String itemNo = cursor.getString(0);
+		// cursor.close();
 		SQLiteDatabase localSqliteDatebase = this.db;
 		localSqliteDatebase
 				.execSQL(
-						"update saleandpdt set status1 = ? , closeTime1 = ? where  pdtName=? and salerecordId=?",
-						new Object[] { done, closeTime, PdtName, itemNo });
+						"update saleandpdt set status1 = ? , closeTime1 = ? where  pdtName=? and salerecordId=? and id=?"
+								+ BILLID, new Object[] { done, closeTime,
+								PdtName, ItemNo });
 	}
 
 	/*
 	 * 更新数据库 ， 使status为done
 	 */
 	public void update(String done, String desk_name) {
+
 		String str = "select itemNo from SaleRecord where deskName='"
-				+ desk_name + "'";
+				+ desk_name
+				+ "' and createTime=(select max( createTime ) from SaleRecord where "
+				+ "deskName='" + desk_name + "')";
+
 		Cursor cursor = db.rawQuery(str, null);
 		cursor.moveToFirst();
-		int itemNo = cursor.getInt(0);
+		String itemNo = cursor.getString(0);
 		cursor.close();
 		SQLiteDatabase localSqliteDatebase = this.db;
 		localSqliteDatebase.execSQL(
@@ -616,12 +542,24 @@ public class sql_SaleRecord {
 
 	}
 
+	/*
+	 * 更新done为delivered状态
+	 */
+	public void update_delivered(String itemNo, String status) {
+
+		this.db.execSQL("update saleandpdt set status1 = '" + status
+				+ "' where salerecordId='" + itemNo + "' and status1='Done'");
+
+	}
+
 	public void update_numac(d_SaleRecord paramd_SaleRecord, float paramFloat) {
 		String str = "select itemNo from SaleRecord where deskName='"
-				+ Constant.table_id + "'";
+				+ Constant.table_id
+				+ "' and createTime=(select max( createTime ) from SaleRecord where "
+				+ "deskName='" + Constant.table_id + "')";
 		Cursor cursor = db.rawQuery(str, null);
 		cursor.moveToFirst();
-		int itemNo = cursor.getInt(0);
+		String itemNo = cursor.getString(0);
 		cursor.close();
 		SQLiteDatabase localSQLiteDatabase = this.db;
 		BigDecimal localBigDecimal = BigDecimal.valueOf(paramd_SaleRecord
@@ -638,6 +576,7 @@ public class sql_SaleRecord {
 							"update saleandpdt set number=? where pdtCode=? and salerecordId=?",
 							arrayOfObject);
 		}
+		localSQLiteDatabase.close();
 	}
 
 	// public void update_numspec(d_SaleRecord paramd_SaleRecord) {
@@ -651,16 +590,10 @@ public class sql_SaleRecord {
 	// arrayOfObject);
 	// }
 
-	public void update_send(String desk, String status) {
-		String str = "select itemNo from SaleRecord where deskName='"
-				+ Constant.table_id + "'";
-		Cursor cursor = db.rawQuery(str, null);
-		cursor.moveToFirst();
-		int itemNo = cursor.getInt(0);
-		cursor.close();
-		this.db.execSQL(
-				"update saleandpdt set  status1=? where salerecordId=? and status1='Not Sent'",
-				new Object[] { status, itemNo });
+	public void update_send(String desk, String id, String status) {
+
+		this.db.execSQL("update saleandpdt set status1=? where salerecordId='"
+				+ id + "' and status1='Not Sent'", new Object[] { status });
 	}
 
 	/*
@@ -680,6 +613,7 @@ public class sql_SaleRecord {
 									.getColumnIndex("number"))).floatValue();
 			mSumTotal += mSum;
 		}
+		localCursor.close();
 		return mSumTotal;
 
 	}
@@ -689,16 +623,19 @@ public class sql_SaleRecord {
 	 */
 	public String getLastTime() {
 		String time = "";
-		String str = "select createTime1 from saleandpdt order by createTime1 desc";
+		String str = "select createTime1 from saleandpdt as s1 join SaleRecord as s2 on"
+				+ " s1.salerecordId=s2.itemNo order by createTime1 desc";
 		Cursor localCursor = db.rawQuery(str, null);
+
 		if (localCursor.moveToFirst()) {
 			time = localCursor.getString(0);
 		}
 		if (time == null || time.equals("")) {
 			time = "2015-01-01 12:12:12";
 		}
-		return time;
 
+		localCursor.close();
+		return time;
 	}
 
 	/*
@@ -710,17 +647,20 @@ public class sql_SaleRecord {
 				"update SaleRecord set rebate = ? where  deskName=?",
 				new String[] { localSaleRecord.getDiscount() + "",
 						localSaleRecord.getDesk_name(), });
-
+		localSqliteDatebase.close();
 	}
 
 	/*
 	 * 更新折扣
 	 */
-	public void update_discountAll(String discount, String desk_name) {
+	public void update_discountAll(float discount, String desk_name) {
 		SQLiteDatabase localSqliteDatebase = this.db;
-		localSqliteDatebase.execSQL(
-				"update SaleRecord set rebate = ? where  deskName=?",
-				new String[] { discount, desk_name });
+		localSqliteDatebase
+				.execSQL(
+						"update SaleRecord set rebate = ? where deskName=? and createTime="
+								+ "(select max( createTime ) from SaleRecord where deskName=?)",
+						new Object[] { discount, desk_name, desk_name });
+		localSqliteDatebase.close();
 	}
 
 	public boolean checkDesk(String table_id) {
@@ -730,89 +670,96 @@ public class sql_SaleRecord {
 		if (localCursor.moveToLast()) {
 			result = localCursor.getInt(0);
 		}
+		localCursor.close();
 		return result == 0;
 	}
 
 	public void updateDone(d_SaleRecord sr) {
 		String str = "select itemNo from SaleRecord where deskName='"
-				+ sr.getDesk_name() + "'";
+				+ sr.getDesk_name()
+				+ "' and createTime=(select max( createTime ) from SaleRecord where "
+				+ "deskName='" + sr.getDesk_name() + "')";
 		Cursor cursor = db.rawQuery(str, null);
 		cursor.moveToFirst();
-		int itemNo = cursor.getInt(0);
+		String itemNo = cursor.getString(0);
 		cursor.close();
 
-		if (sr.getStatus().equals("Done")) {
+		if (sr.getStatus1().equals("Done")) {
 			db.execSQL(
 					"update saleandpdt set status1=? where  salerecordId=? and pdtCode = ? and status1='Sent'",
-					new Object[] { sr.getStatus(), itemNo, sr.getPdtCODE() });
+					new Object[] { sr.getStatus1(), itemNo, sr.getPdtCODE() });
 		}
 	}
 
 	public void updateFinish(d_SaleRecord sr) {
 		db.execSQL(
-				"update SaleRecord set status=? where  desk_name=? and PdtCODE = ?",
-				new String[] { sr.getStatus(), sr.getDesk_name(),
-						sr.getPdtCODE() });
+				"update saleandpdt set status=? where  salerecordId='"
+						+ sr.getItemNo() + "' and PdtCODE = ?", new String[] {
+						sr.getStatus1(), sr.getPdtCODE() });
 
 	}
 
 	public boolean getStatus(String table_id) {
-		String str1 = "select itemNo from SaleRecord where deskName='"
-				+ table_id + "'";
-		Cursor cursor = db.rawQuery(str1, null);
-		cursor.moveToFirst();
-		int itemNo = cursor.getInt(0);
-		cursor.close();
+
 		int result = 0;
-		String str = "select * from saleandpdt where salerecordId=? and status1='Not Sent'";
-		Cursor localCursor = db.rawQuery(str,
-				(String[]) new Object[] { itemNo });
+		String str = "select * from saleandpdt as s1 join SaleRecord as s2 on s2.itemNo=s1.salerecordId "
+				+ " where salerecordId=? and status1='Not Sent'";
+		Cursor localCursor = db.rawQuery(str, null);
 		if (localCursor.moveToLast()) {
 			result = localCursor.getCount();
 		}
+		localCursor.close();
 		return result == 1;
+
 	}
 
 	// public void delete(String desk_name, int id) {
 	// db.execSQL("delete from SaleRecord where desk_name =? and id=?",
 	// new Object[] { desk_name, id });
 	// }
+	// public void update_customerNo(d_SaleRecord paramd_SaleRecord,
+	// float paramFloat) {
+	// BigDecimal localBigDecimal = BigDecimal.valueOf(paramd_SaleRecord
+	// .getCustomerNo());
+	// float f = localBigDecimal.add(new BigDecimal(paramFloat))
+	// .setScale(2, 4).floatValue();
+	// if (f >= 1.0F) {
+	// Object[] arrayOfObject = new Object[2];
+	// arrayOfObject[0] = Float.valueOf(f);
+	// arrayOfObject[1] = paramd_SaleRecord.getItemNo();
+	// db.execSQL("update SaleRecord set CustomerNo=? where ItemNo=?",
+	// arrayOfObject);
+	// }
+	// }
 
-	public void update_customerNo(d_SaleRecord paramd_SaleRecord,
-			float paramFloat) {
-	
-		BigDecimal localBigDecimal = BigDecimal.valueOf(paramd_SaleRecord
-				.getCustomerNo());
-		float f = localBigDecimal.add(new BigDecimal(paramFloat))
-				.setScale(2, 4).floatValue();
-		if (f >= 1.0F) {
-			Object[] arrayOfObject = new Object[2];
-			arrayOfObject[0] = Float.valueOf(f);
-			arrayOfObject[1] = paramd_SaleRecord.getItemNo();
-			db.execSQL("update Cutomer set customNo=? where ItemNo=?",
-					arrayOfObject);
-		}
-	}
-
-	public void update_customerNo(String ItemNo, boolean falg) {
+	public void update_customerNo(int id, boolean falg) {
 		String sql = "";
 		if (falg) {
-			sql = "update Cutomer set CustomerNo=CustomerNo+1 where ItemNo=? ";
+			sql = "update saleandpdt set contactNumber = contactNumber+1 where id=?";
 		} else {
-			sql = "update Cutomer set CustomerNo=CustomerNo-1 where ItemNo=? ";
+			sql = "update saleandpdt set contactNumber = contactNumber-1 where id=?";
 		}
-		db.execSQL(sql, new Object[] { ItemNo});
+		db.execSQL(sql, new Object[] { id });
+	}
+
+	public void update_customerNo(int id, int count) {
+		String sql = "";
+		sql = "update saleandpdt set contactNumber=? where id=?";
+		db.execSQL(sql, new Object[] { id, count });
 	}
 
 	public void updateAllCustomerNo() {
-		String str = "select itemNo from SaleRecord where deskName='"
-				+ Constant.table_id + "'";
-		Cursor cursor = db.rawQuery(str, null);
-		cursor.moveToFirst();
-		int itemNo = cursor.getInt(0);
-		cursor.close();
-		String sql = "update Cutomer set CustomerNo=0 where ItemNo=?";
+		String id;
 
-		db.execSQL(sql, new Object[] { itemNo });
+		Cursor localCursor = this.db
+				.rawQuery(
+						"select itemNo from SaleRecord where deskName=? and"
+								+ " createTime=(select max( createTime ) from SaleRecord where deskName=?)",
+						new String[] { Constant.table_id, Constant.table_id });
+		localCursor.moveToFirst();
+		id = localCursor.getString(0);
+		localCursor.close();
+		String sql = "update saleandpdt set contactNumber=0 where salerecordId=?";
+		db.execSQL(sql, new Object[] { id });
 	}
 }

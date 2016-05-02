@@ -7,10 +7,8 @@ import java.util.List;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -23,10 +21,13 @@ import android.widget.TextView;
 
 import com.utopia.Dao.sql_Product;
 import com.utopia.Dao.sql_SaleRecord;
+import com.utopia.Dao.sql_Saleandpdt;
+import com.utopia.Dao.sql_Sales;
 import com.utopia.Dao.sql_desk;
-import com.utopia.Dialog.pop_open;
 import com.utopia.Model.d_Desk;
+import com.utopia.Model.d_Sale;
 import com.utopia.Model.d_SaleRecord;
+import com.utopia.Model.d_Saleandpdt;
 import com.utopia.activity.DeskMenuActivity;
 import com.utopia.activity.OrdersAcitvity;
 import com.utopia.activity.R;
@@ -44,36 +45,39 @@ public class DeskAdapter extends BaseAdapter implements View.OnClickListener {
 	private String m_sql;
 	private int prerow = 0, precol = 0, status = 0;
 	List<d_SaleRecord> saleRecords = new ArrayList<d_SaleRecord>();
+	List<d_Saleandpdt> sales = new ArrayList<d_Saleandpdt>();
 	List<d_Desk> lstDate = new ArrayList<d_Desk>();
 	private String md5 = Md5.md5(Snippet.generateID());
 	public static final int SIZE = 35;
-	private int page = 0 ;
+//	private int page = 0;
 	private int bageColor = R.drawable.badge_ifaux;
+
 	public DeskAdapter(Context paramContext) {
 		this.context = paramContext;
-		//execsql(Constant.Area);
+		// execsql(Constant.Area);
 	}
 
 	public DeskAdapter(Context mContext, List<d_Desk> list, int page) {
 		this.context = mContext;
 		lstDate = new ArrayList<d_Desk>();
-		this.page = page;
-			
+//		this.page = page;
+
 		int i = 0;
 		int iEnd = 0;
 		int count = 0;
-		
-		if(page == 0){
+
+		if (page == 0) {
 			i = 0;
-		}else{
-			for(int j = 0 ; j < list.size() ; j++){
-				if(list.get(j).getRow() <= ((page-1)*5+4) && list.get(j).getCol()<=7 ){
+		} else {
+			for (int j = 0; j < list.size(); j++) {
+				if (list.get(j).getRow() <= ((page - 1) * 5 + 4)
+						&& list.get(j).getCol() <= 7) {
 					count++;
 				}
 			}
-			i = count;
+			i = count; // 该区域内桌子的数量
 		}
-		count=0;
+		count = 0;
 		for (int j = 0; j < list.size(); j++) {
 			if (list.get(j).getRow() <= (page * 5 + 4)
 					&& list.get(j).getCol() <= 7) {
@@ -86,12 +90,11 @@ public class DeskAdapter extends BaseAdapter implements View.OnClickListener {
 			lstDate.add(list.get(i));
 			i++;
 		}
-		
-		if(page==0){
+
+		if (page == 0) {
 			prerow = 0;
-		}
-		else{
-			prerow=page*4+page;
+		} else {
+			prerow = page * 4 + page;
 		}
 	}
 
@@ -108,11 +111,11 @@ public class DeskAdapter extends BaseAdapter implements View.OnClickListener {
 	}
 
 	public int getCount() {
-		if(lstDate.size() > 0 ){
-			return lstDate.get(lstDate.size()-1).getRow()*7 + lstDate.get(lstDate.size()-1).getCol();			
-		}
-		else{
-			return 0 ; 
+		if (lstDate.size() > 0) {
+			return lstDate.get(lstDate.size() - 1).getRow() * 7
+					+ lstDate.get(lstDate.size() - 1).getCol();
+		} else {
+			return 0;
 		}
 
 	}
@@ -130,7 +133,7 @@ public class DeskAdapter extends BaseAdapter implements View.OnClickListener {
 		if (paramView == null) {
 			paramView = LayoutInflater.from(this.context).inflate(
 					R.layout.desk_ltem, null);
-            
+
 			localAppItem2.waiter_name = ((Button) paramView
 					.findViewById(R.id.waiter_name));
 			localAppItem2.desk_money = ((TextView) paramView
@@ -153,15 +156,14 @@ public class DeskAdapter extends BaseAdapter implements View.OnClickListener {
 				return paramView;
 			}
 		}
-		if (lstDate.size()  == status) {
-
+		if (lstDate.size() == status) {
 			return paramView;
 		}
-		//lstDate.get(paramInt);
+		// lstDate.get(paramInt);
 		// m_CallCursor.moveToPosition(status);
 		d_Desk locald_keycode = new d_Desk();
 		locald_keycode = lstDate.get(status);
-		
+
 		if (precol < 7) {
 			precol++;
 		} else {
@@ -171,45 +173,51 @@ public class DeskAdapter extends BaseAdapter implements View.OnClickListener {
 		localAppItem2.ll.setTag(locald_keycode);
 
 		if (locald_keycode.getRow() * 7 + locald_keycode.getCol() != prerow * 7
-				+ precol ) {
+				+ precol) {
 			return paramView;
 		} else {
 			++status;
-			m_sql = "select Price,number,status from SaleRecord where status!='Finish' and desk_name='"
+			// 获得桌子上所有菜的信息
+			m_sql = "select s2.price,s2.number,s2.status1 from SaleRecord as s1 join saleandpdt as s2 on s1.itemNo=s2.salerecordId "
+					+ "  where s2.status1!='Finish' and deskName='"
 					+ locald_keycode.getDesk_name() + "'";
 			m_CallCursor2 = new sql_Product().recordlist3(m_sql);
 		}
 
 		double money = 0.0;
-		int flag = 0;
+		int flag = 0;// 纪录该桌子上目前有没有正在服务的销售纪录
 		while (m_CallCursor2.moveToNext()) {
 			locald_keycode.setState("Ordered");
 			flag++;
 			money += m_CallCursor2.getDouble(m_CallCursor2
-					.getColumnIndex("Price"))
+					.getColumnIndex("price"))
 					* m_CallCursor2.getInt(m_CallCursor2
 							.getColumnIndex("number"));
 		}
 
-		m_sql = "select * from SaleRecord where status='Doned' and desk_name='"
+		// m_sql =
+		// "select * from SaleRecord where status='Doned' and desk_name='"
+		// + locald_keycode.getDesk_name() + "'";
+		m_sql = "select * from SaleRecord as s1 join saleandpdt as s2 on s1.itemNo=s2.salerecordId"
+				+ " where status1='Delivered' and deskName='"
 				+ locald_keycode.getDesk_name() + "'";
 		m_CallCursor2 = new sql_Product().recordlist3(m_sql);
-
+		// 该桌所有的菜都发向了厨房
 		if (flag == m_CallCursor2.getCount() && flag != 0) {
 			locald_keycode.setState("Delivered");
 		}
-		
+
 		m_CallCursor2.close();
 		localAppItem2.ll.setOnClickListener(this);
 		localAppItem2.waiter_name.setText(locald_keycode.getS_account());
 		localAppItem2.waiter_name.setTextSize(15);
-//        if(lstDate.get(paramInt).getState().equals("Unpaid")){
-//        	localAppItem2.waiter_name.setBackgroundColor(Color.parseColor("#FF4E4E"));
-//		}else{
-//			localAppItem2.waiter_name.setBackgroundColor(Color.parseColor("#838E66"));
-//		}
+		// if(lstDate.get(paramInt).getState().equals("Unpaid")){
+		// localAppItem2.waiter_name.setBackgroundColor(Color.parseColor("#FF4E4E"));
+		// }else{
+		// localAppItem2.waiter_name.setBackgroundColor(Color.parseColor("#838E66"));
+		// }
 		((LinearLayout) paramView.findViewById(R.id.desk_content))
-				.setBackgroundResource(R.drawable.desk_normal);
+				.setBackgroundResource(R.drawable.deskbg_self_1);
 
 		localAppItem2.desk_name.setText(locald_keycode.getDesk_name());
 		if (locald_keycode.getState().equals("EMPTY")) {
@@ -225,31 +233,35 @@ public class DeskAdapter extends BaseAdapter implements View.OnClickListener {
 			localAppItem2.desk_state.setText(locald_keycode.getState());
 			localAppItem2.desk_state.setTextSize(17);
 			if (locald_keycode.getStarttime().equals("")) {
-				
-				localAppItem2.desk_time.setText(DateUtils.getHour()+"h"+DateUtils.getminute()+"m");
+
+				localAppItem2.desk_time.setText(DateUtils.getHour() + "h"
+						+ DateUtils.getminute() + "m");
 				localAppItem2.desk_time.setTextSize(15);
 			} else {
-				int hour=DateUtils.getHour();
-				//Log.i("tag",hour+"  当前小时数");
-				int minute=DateUtils.getminute();
-				//Log.i("tag",minute+"  当前分钟数");
-				int beginhour=Integer.parseInt(locald_keycode.getStarttime().substring(11, 13).trim());
-				int beginminute=Integer.parseInt(locald_keycode.getStarttime().substring(14, 16).trim());
-				int time_number=(hour*60+minute)-(beginhour*60+beginminute);
-	
-				int hour1=time_number/60;
-				int minute1=time_number%60;
-				localAppItem2.desk_time.setText(hour1-12+":"+minute1);
-				localAppItem2.desk_time.setTextSize(15);	
-				
+				int hour = DateUtils.getHour();
+				// Log.i("tag",hour+"  当前小时数");
+				int minute = DateUtils.getminute();
+				// Log.i("tag",minute+"  当前分钟数");
+				int beginhour = Integer.parseInt(locald_keycode.getStarttime()
+						.substring(11, 13).trim());
+				int beginminute = Integer.parseInt(locald_keycode
+						.getStarttime().substring(14, 16).trim());
+				int time_number = (hour * 60 + minute)
+						- (beginhour * 60 + beginminute);
+
+				int hour1 = time_number / 60;
+				int minute1 = time_number % 60;
+				localAppItem2.desk_time.setText(hour1 - 12 + ":" + minute1);
+				localAppItem2.desk_time.setTextSize(15);
+
 			}
-			////////////////////////////////////////////
+			// //////////////////////////////////////////
 			if (Constant.currentStaff.getS_name().equals(
 					locald_keycode.getS_account())) {
 				((LinearLayout) paramView.findViewById(R.id.desk_content))
-						.setBackgroundResource(R.drawable.deskbg_self);
-				bageColor = R.drawable.badge_self;
-				//localAppItem2.ll.setOnClickListener(this);///修改
+						.setBackgroundResource(R.drawable.deskbg_self_1);
+				bageColor = R.drawable.badge_self_1;
+
 			} else {
 				((LinearLayout) paramView.findViewById(R.id.desk_content))
 						.setBackgroundResource(R.drawable.deskbg_other);
@@ -270,21 +282,21 @@ public class DeskAdapter extends BaseAdapter implements View.OnClickListener {
 			badge.setText(locald_keycode.getMessage() + "");
 			badge.setBackgroundResource(bageColor);
 			badge.setBadgePosition(MyBadgeView.POSITION_TOP_RIGHT);
-			badge.setTextSize(16);
+			badge.setTextSize(22);
 			badge.toggle(true);
 		}
 		return paramView;
 	}
 
 	public void onClick(View paramView) {
-		if(!Constant.pop){
+		if (!Constant.pop) {
 			d_Desk locald_keycode = (d_Desk) paramView.getTag();
 			if (paramView.getId() == R.id.desk_content) {
 				Constant.table_id = locald_keycode.getDesk_name().toString();
 
 				if (locald_keycode.getMessage() > 0) {
 					updateDone();
-					
+
 				} else {
 					Intent intent = new Intent(context, OrdersAcitvity.class);
 					Bundle bundle = new Bundle();
@@ -293,17 +305,17 @@ public class DeskAdapter extends BaseAdapter implements View.OnClickListener {
 					intent.putExtra("type", "3");
 					intent.putExtras(bundle);
 					context.startActivity(intent);
-					
 				}
-			
 			}
 		}
 	}
 
-	private sql_SaleRecord ssr;
+	// private sql_SaleRecord ssr;
+	private sql_Saleandpdt ssr1;
 
 	private void updateDone() {
-		ssr = new sql_SaleRecord();
+		// ssr = new sql_SaleRecord();
+		ssr1 = new sql_Saleandpdt();
 		new RefreshAsyncTask().execute();
 	}
 
@@ -318,8 +330,14 @@ public class DeskAdapter extends BaseAdapter implements View.OnClickListener {
 		@Override
 		protected String doInBackground(String... params) {
 			System.out.println("调用doInBackground()方法--->开始执行异步任务");
-			saleRecords = new JsonResolveUtils(context)
-					.getSaleRecordDone(Constant.table_id);
+			// saleRecords = new JsonResolveUtils(context)
+			// .getSaleRecordDone(Constant.table_id);
+			String id = (new sql_SaleRecord()).getDeskId(Constant.table_id);
+			sales = new JsonResolveUtils(context).getSaleandpdtDone(
+					Constant.table_id, id);
+			String itemNo = (new sql_SaleRecord()).getDeskId(Constant.table_id);
+			List<d_Sale> salerecords = (new sql_Sales()).getSales(itemNo);
+			(new JsonResolveUtils(context)).sendSaleRecords(salerecords);
 			return null;
 		}
 
@@ -329,7 +347,8 @@ public class DeskAdapter extends BaseAdapter implements View.OnClickListener {
 			super.onPostExecute(result);
 			System.out.println("调用onPostExecute()方法--->异步任务执行完毕");
 			for (int i = 0; i < saleRecords.size(); i++) {
-				ssr.updateDone(saleRecords.get(i));
+				// ssr.updateDone(saleRecords.get(i));
+				ssr1.updateDone(sales.get(i));
 				System.out.println(saleRecords.get(i).toString());
 			}
 			Intent intent = new Intent(context, OrdersAcitvity.class);

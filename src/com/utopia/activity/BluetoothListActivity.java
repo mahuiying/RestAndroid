@@ -18,6 +18,7 @@ package com.utopia.activity;
 
 import java.util.Set;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -29,6 +30,7 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -44,6 +46,7 @@ import com.utopia.Base.BaseActivity;
 import com.utopia.utils.Constant;
 import com.utopia.utils.ExitApplication;
 
+@SuppressLint("HandlerLeak")
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BluetoothListActivity extends BaseActivity {
 	// Return Intent extra
@@ -54,6 +57,19 @@ public class BluetoothListActivity extends BaseActivity {
 	private ArrayAdapter<String> mPairedDevicesArrayAdapter;
 	private ArrayAdapter<String> mNewDevicesArrayAdapter;
 	private Set<BluetoothDevice> pairedDevices;
+
+	@SuppressLint("HandlerLeak")
+	private Handler handler = new Handler() {
+		public void handleMessage(android.os.Message msg) {
+			findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
+			for (BluetoothDevice device : pairedDevices) {
+				if (device.getName().equals("Gprinter"))
+					mPairedDevicesArrayAdapter.add(device.getName() + "\n"
+							+ device.getAddress());
+			}
+		};
+	};
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -62,11 +78,10 @@ public class BluetoothListActivity extends BaseActivity {
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.bluetooth_list);
 
-
 		WindowManager.LayoutParams windowLP = getWindow().getAttributes();
-        windowLP.alpha = 0.0f;
-        getWindow().setAttributes(windowLP);
-		  
+		windowLP.alpha = 0.0f;
+		getWindow().setAttributes(windowLP);
+
 		// Set result CANCELED incase the user backs out
 		setResult(Activity.RESULT_CANCELED);
 
@@ -121,25 +136,19 @@ public class BluetoothListActivity extends BaseActivity {
 			@Override
 			protected Boolean doInBackground(Void... params) {
 				try {
-					// If there are paired devices, add each one to the ArrayAdapter
+					// If there are paired devices, add each one to the
+					// ArrayAdapter
 					if (pairedDevices.size() > 0) {
-						findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
-						for (BluetoothDevice device : pairedDevices) {
-							if(device.getName().equals("Gprinter"))
-							mPairedDevicesArrayAdapter.add(device.getName() + "\n"
-									+ device.getAddress());
-						}
+						handler.sendEmptyMessage(0);
 					} else {
-						String noDevices = getResources().getText(R.string.none_paired)
-								.toString();
+						String noDevices = getResources().getText(
+								R.string.none_paired).toString();
 						mPairedDevicesArrayAdapter.add(noDevices);
 					}
 					Thread.sleep(3000);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
 				return true;
 			}
 
@@ -147,9 +156,10 @@ public class BluetoothListActivity extends BaseActivity {
 			protected void onPostExecute(Boolean result) {
 				super.onPostExecute(result);
 				dismissLoadingDialog();
-				WindowManager.LayoutParams windowLP = getWindow().getAttributes();
-		        windowLP.alpha = 1.0f;
-		        getWindow().setAttributes(windowLP);
+				WindowManager.LayoutParams windowLP = getWindow()
+						.getAttributes();
+				windowLP.alpha = 1.0f;
+				getWindow().setAttributes(windowLP);
 			}
 		});
 
@@ -163,7 +173,6 @@ public class BluetoothListActivity extends BaseActivity {
 		if (mBtAdapter != null) {
 			mBtAdapter.cancelDiscovery();
 		}
-
 		// Unregister broadcast listeners
 		this.unregisterReceiver(mReceiver);
 	}
@@ -183,7 +192,6 @@ public class BluetoothListActivity extends BaseActivity {
 		if (mBtAdapter.isDiscovering()) {
 			mBtAdapter.cancelDiscovery();
 		}
-
 		// Request discover from BluetoothAdapter
 		mBtAdapter.startDiscovery();
 	}
@@ -197,6 +205,9 @@ public class BluetoothListActivity extends BaseActivity {
 			// Get the device MAC address, which is the last 17 chars in the
 			// View
 			String info = ((TextView) v).getText().toString();
+			if (info.equals("No devices have been paired")) {
+				return;
+			}
 			String address = info.substring(info.length() - 17);
 			Constant.printerAddress = address;
 			// Create the result Intent and include the MAC address
@@ -243,13 +254,11 @@ public class BluetoothListActivity extends BaseActivity {
 
 	@Override
 	protected void initViews() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	protected void initEvents() {
-		// TODO Auto-generated method stub
 
 	}
 

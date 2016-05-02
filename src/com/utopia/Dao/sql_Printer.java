@@ -14,7 +14,7 @@ public class sql_Printer {
 	Context context;
 	SQLiteDatabase db;
 
-	//初始化数据库
+	// 初始化数据库
 	public sql_Printer() {
 		db = Constant.openDatabase();
 	}
@@ -25,7 +25,7 @@ public class sql_Printer {
 			db = openDatabase();
 	}
 
-	//打开数据库
+	// 打开数据库
 	private SQLiteDatabase openDatabase() {
 		return SQLiteDatabase.openOrCreateDatabase(
 				Constant.getDatabaseFilename(), null);
@@ -33,6 +33,7 @@ public class sql_Printer {
 
 	/**
 	 * 检查是否可存
+	 * 
 	 * @param param
 	 */
 	public void checksave(d_Printer param) {
@@ -62,6 +63,7 @@ public class sql_Printer {
 
 	/**
 	 * 删除某个记录
+	 * 
 	 * @param paramString
 	 */
 	public void delete(String paramString) {
@@ -71,6 +73,7 @@ public class sql_Printer {
 
 	/**
 	 * 返回所有记录值
+	 * 
 	 * @param paramString
 	 * @return
 	 */
@@ -81,8 +84,10 @@ public class sql_Printer {
 				null);
 		while (localCursor.moveToNext()) {
 			printer = new d_Printer();
-			printer.setMac(localCursor.getString(localCursor.getColumnIndex("mac")));
-			printer.setAlias(localCursor.getString(localCursor.getColumnIndex("alias")));
+			printer.setMac(localCursor.getString(localCursor
+					.getColumnIndex("mac")));
+			printer.setAlias(localCursor.getString(localCursor
+					.getColumnIndex("alias")));
 			localArrayList.add(printer);
 		}
 		localCursor.close();
@@ -91,6 +96,7 @@ public class sql_Printer {
 
 	/**
 	 * 自定义查询条件
+	 * 
 	 * @param paramString
 	 * @return
 	 */
@@ -106,29 +112,28 @@ public class sql_Printer {
 
 	/**
 	 * 插入数据
+	 * 
 	 * @param d_Printer
 	 */
 	public void save(d_Printer param) {
 		Object[] arrayOfObject = new Object[2];
 		arrayOfObject[0] = param.getMac();
 		arrayOfObject[1] = param.getAlias();
-		db.execSQL(
-				"INSERT INTO Printer(mac,alias) values(?,?)", arrayOfObject);
+		db.execSQL("INSERT INTO Printer(mac,alias) values(?,?)", arrayOfObject);
 	}
 
 	/**
 	 * 更新数据库
+	 * 
 	 * @param paramd_Area
 	 * @param paramString1
 	 * @param paramString2
 	 */
-	public void update(d_Printer param, String paramString1,
-			String paramString2) {
+	public void update(d_Printer param, String paramString1, String paramString2) {
 		Object[] arrayOfObject = new Object[3];
 		arrayOfObject[0] = paramString1;
 		arrayOfObject[1] = paramString2;
 		arrayOfObject[2] = param.getId();
-		db.execSQL(
-				"update Printer set mac=?,alias=? where id=?", arrayOfObject);
+		db.execSQL("update Printer set mac=?,alias=? where id=?", arrayOfObject);
 	}
 }

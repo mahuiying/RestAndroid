@@ -5,9 +5,6 @@ import android.os.AsyncTask;
 
 import com.utopia.Dao.sql_desk;
 import com.utopia.Model.d_Desk;
-import com.utopia.activity.DeskMenuActivity;
-import com.utopia.utils.Constant;
-import com.utopia.utils.DateUtils;
 import com.utopia.utils.JsonResolveUtils;
 
 public class DeskManager {

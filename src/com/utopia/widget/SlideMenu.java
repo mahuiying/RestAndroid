@@ -2,7 +2,7 @@ package com.utopia.widget;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.util.AttributeSet; 
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -27,7 +27,7 @@ public class SlideMenu extends ViewGroup {
 
 	private final static int TOUCH_STATE_REST = 0;
 	private final static int TOUCH_STATE_SCROLLING = 1;
-	private static final int SNAP_VELOCITY = 1000;
+	// private static final int SNAP_VELOCITY = 1000;
 
 	public int mTouchState = TOUCH_STATE_REST;
 	private boolean mLocked;
@@ -140,14 +140,14 @@ public class SlideMenu extends ViewGroup {
 
 		case MotionEvent.ACTION_DOWN:
 			// Remember location of down touch
-			
+
 			mLastMotionX = x;
 			mLastMotionY = y;
 			mAllowLongPress = true;
 
 			mTouchState = mScroller.isFinished() ? TOUCH_STATE_REST
 					: TOUCH_STATE_SCROLLING;
-			//openMenu();
+			// openMenu();
 			break;
 
 		case MotionEvent.ACTION_CANCEL:
@@ -192,73 +192,46 @@ public class SlideMenu extends ViewGroup {
 			mVelocityTracker = VelocityTracker.obtain();
 		}
 		mVelocityTracker.addMovement(ev);
+//		mVelocityTracker.recycle();
 
-		final int action = ev.getAction();
-		final float x = ev.getX();
+		// final int action = ev.getAction();
+		// final float x = ev.getX();
 
-		/*switch (action) {
-		case MotionEvent.ACTION_DOWN:
-			
-			  If being flinged and user touches, stop the fling. isFinished
-			 * will be false if being flinged.
-			 
-			if (!mScroller.isFinished()) {
-				mScroller.abortAnimation();
-			}
-
-			// Remember where the motion event started
-			mLastMotionX = x;
-			break;
-		case MotionEvent.ACTION_MOVE:
-			if (mTouchState == TOUCH_STATE_SCROLLING) {
-				// Scroll to follow the motion event
-				final int deltaX = (int) (mLastMotionX - x);
-				mLastMotionX = x;
-
-				if (deltaX < 0) {
-					if (deltaX + getScrollX() >= -getChildAt(0).getWidth()) {
-						scrollBy(deltaX, 0);
-					}
-
-				} else if (deltaX > 0) {
-					final int availableToScroll = getChildAt(
-							getChildCount() - 1).getRight()
-							- getScrollX() - getWidth();
-
-					if (availableToScroll > 0) {
-						scrollBy(Math.min(availableToScroll, deltaX), 0);
-					}
-				}
-			}
-			break;
-		case MotionEvent.ACTION_UP:
-			if (mTouchState == TOUCH_STATE_SCROLLING) {
-				final VelocityTracker velocityTracker = mVelocityTracker;
-				velocityTracker.computeCurrentVelocity(1000);
-				int velocityX = (int) velocityTracker.getXVelocity();
-
-				if (velocityX > SNAP_VELOCITY && mCurrentScreen == SCREEN_MAIN) {
-					// Fling hard enough to move left
-					snapToScreen(SCREEN_MENU);
-				} else if (velocityX < -SNAP_VELOCITY
-						&& mCurrentScreen == SCREEN_MENU) {
-					// Fling hard enough to move right
-					snapToScreen(SCREEN_MAIN);
-				} else {
-					snapToDestination();
-				}
-
-				if (mVelocityTracker != null) {
-					mVelocityTracker.recycle();
-					mVelocityTracker = null;
-				}
-			}
-			mTouchState = TOUCH_STATE_REST;
-			break;
-		case MotionEvent.ACTION_CANCEL:
-			mTouchState = TOUCH_STATE_REST;
-		}
-*/
+		/*
+		 * switch (action) { case MotionEvent.ACTION_DOWN:
+		 * 
+		 * If being flinged and user touches, stop the fling. isFinished will be
+		 * false if being flinged.
+		 * 
+		 * if (!mScroller.isFinished()) { mScroller.abortAnimation(); }
+		 * 
+		 * // Remember where the motion event started mLastMotionX = x; break;
+		 * case MotionEvent.ACTION_MOVE: if (mTouchState ==
+		 * TOUCH_STATE_SCROLLING) { // Scroll to follow the motion event final
+		 * int deltaX = (int) (mLastMotionX - x); mLastMotionX = x;
+		 * 
+		 * if (deltaX < 0) { if (deltaX + getScrollX() >=
+		 * -getChildAt(0).getWidth()) { scrollBy(deltaX, 0); }
+		 * 
+		 * } else if (deltaX > 0) { final int availableToScroll = getChildAt(
+		 * getChildCount() - 1).getRight() - getScrollX() - getWidth();
+		 * 
+		 * if (availableToScroll > 0) { scrollBy(Math.min(availableToScroll,
+		 * deltaX), 0); } } } break; case MotionEvent.ACTION_UP: if (mTouchState
+		 * == TOUCH_STATE_SCROLLING) { final VelocityTracker velocityTracker =
+		 * mVelocityTracker; velocityTracker.computeCurrentVelocity(1000); int
+		 * velocityX = (int) velocityTracker.getXVelocity();
+		 * 
+		 * if (velocityX > SNAP_VELOCITY && mCurrentScreen == SCREEN_MAIN) { //
+		 * Fling hard enough to move left snapToScreen(SCREEN_MENU); } else if
+		 * (velocityX < -SNAP_VELOCITY && mCurrentScreen == SCREEN_MENU) { //
+		 * Fling hard enough to move right snapToScreen(SCREEN_MAIN); } else {
+		 * snapToDestination(); }
+		 * 
+		 * if (mVelocityTracker != null) { mVelocityTracker.recycle();
+		 * mVelocityTracker = null; } } mTouchState = TOUCH_STATE_REST; break;
+		 * case MotionEvent.ACTION_CANCEL: mTouchState = TOUCH_STATE_REST; }
+		 */
 		return true;
 	}
 
@@ -343,7 +316,7 @@ public class SlideMenu extends ViewGroup {
 	}
 
 	public void openMenu() {
-		mCurrentScreen = SCREEN_MENU; 
+		mCurrentScreen = SCREEN_MENU;
 		snapToScreen(mCurrentScreen);
 	}
 

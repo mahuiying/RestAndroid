@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase; 
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 
 import com.utopia.Model.d_Product;
 import com.utopia.utils.Constant;
@@ -16,8 +17,7 @@ public class sql_Product {
 	Context context;
 	SQLiteDatabase db = Constant.openDatabase();
 	DecimalFormat df = new DecimalFormat("0.00");
-    
-    
+
 	public sql_Product(Context context) {
 		this.context = context;
 		df.setRoundingMode(RoundingMode.HALF_UP);
@@ -66,30 +66,51 @@ public class sql_Product {
 	public d_Product recordlist(String PdtCode) {
 		d_Product locald_Product = new d_Product();
 		Cursor localCursor = this.db.rawQuery(
-				"select * from Product where PdtCode=?", new String[]{PdtCode});
+				"select * from Product where PdtCode=?",
+				new String[] { PdtCode });
 		if (localCursor.moveToNext()) {
-			
-			locald_Product.setPdtID(localCursor.getString(localCursor.getColumnIndex("PdtID")));
-			locald_Product.setPdtCode(localCursor.getString(localCursor.getColumnIndex("PdtCode")));
-			locald_Product.setPdtName(localCursor.getString(localCursor.getColumnIndex("PdtName")));
-			locald_Product.setPdtPy(localCursor.getString(localCursor.getColumnIndex("PdtPy")));
-			locald_Product.setPdtUnit(localCursor.getString(localCursor.getColumnIndex("PdtUnit")));
-			locald_Product.setPdtSalePrice1(localCursor.getFloat(localCursor.getColumnIndex("PdtSalePrice1")));
-			locald_Product.setPdtSalePrice2(localCursor.getFloat(localCursor.getColumnIndex("PdtSalePrice2")));
-			locald_Product.setPdtID(localCursor.getString(localCursor.getColumnIndex("PdtID")));
-			locald_Product.setPdtCode(localCursor.getString(localCursor.getColumnIndex("PdtCode")));
-			locald_Product.setPdtName(localCursor.getString(localCursor.getColumnIndex("PdtName")));
-			locald_Product.setPdtPy(localCursor.getString(localCursor.getColumnIndex("PdtPy")));
-			locald_Product.setPdtUnit(localCursor.getString(localCursor.getColumnIndex("PdtUnit")));
-			locald_Product.setPdtSalePrice1(localCursor.getFloat(localCursor.getColumnIndex("PdtSalePrice1")));
-			locald_Product.setPdtSalePrice2(localCursor.getFloat(localCursor.getColumnIndex("PdtSalePrice2")));
-			locald_Product.setPdtID(localCursor.getString(localCursor.getColumnIndex("PdtID")));
-			locald_Product.setPdtCode(localCursor.getString(localCursor.getColumnIndex("PdtCode")));
-			locald_Product.setPdtName(localCursor.getString(localCursor.getColumnIndex("PdtName")));
-			locald_Product.setPdtPy(localCursor.getString(localCursor.getColumnIndex("PdtPy")));
-			locald_Product.setPdtUnit(localCursor.getString(localCursor.getColumnIndex("PdtUnit")));
-			locald_Product.setPdtSalePrice1(localCursor.getFloat(localCursor.getColumnIndex("PdtSalePrice1")));
-			locald_Product.setPdtSalePrice2(localCursor.getFloat(localCursor.getColumnIndex("PdtSalePrice2")));
+			locald_Product.setPdtID(localCursor.getString(localCursor
+					.getColumnIndex("PdtID")));
+			locald_Product.setPdtCode(localCursor.getString(localCursor
+					.getColumnIndex("PdtCode")));
+			locald_Product.setPdtName(localCursor.getString(localCursor
+					.getColumnIndex("PdtName")));
+			locald_Product.setPdtPy(localCursor.getString(localCursor
+					.getColumnIndex("PdtPy")));
+			locald_Product.setPdtUnit(localCursor.getString(localCursor
+					.getColumnIndex("PdtUnit")));
+			locald_Product.setPdtSalePrice1(localCursor.getFloat(localCursor
+					.getColumnIndex("PdtSalePrice1")));
+			locald_Product.setPdtSalePrice2(localCursor.getFloat(localCursor
+					.getColumnIndex("PdtSalePrice2")));
+			locald_Product.setPdtID(localCursor.getString(localCursor
+					.getColumnIndex("PdtID")));
+			locald_Product.setPdtCode(localCursor.getString(localCursor
+					.getColumnIndex("PdtCode")));
+			locald_Product.setPdtName(localCursor.getString(localCursor
+					.getColumnIndex("PdtName")));
+			locald_Product.setPdtPy(localCursor.getString(localCursor
+					.getColumnIndex("PdtPy")));
+			locald_Product.setPdtUnit(localCursor.getString(localCursor
+					.getColumnIndex("PdtUnit")));
+			locald_Product.setPdtSalePrice1(localCursor.getFloat(localCursor
+					.getColumnIndex("PdtSalePrice1")));
+			locald_Product.setPdtSalePrice2(localCursor.getFloat(localCursor
+					.getColumnIndex("PdtSalePrice2")));
+			locald_Product.setPdtID(localCursor.getString(localCursor
+					.getColumnIndex("PdtID")));
+			locald_Product.setPdtCode(localCursor.getString(localCursor
+					.getColumnIndex("PdtCode")));
+			locald_Product.setPdtName(localCursor.getString(localCursor
+					.getColumnIndex("PdtName")));
+			locald_Product.setPdtPy(localCursor.getString(localCursor
+					.getColumnIndex("PdtPy")));
+			locald_Product.setPdtUnit(localCursor.getString(localCursor
+					.getColumnIndex("PdtUnit")));
+			locald_Product.setPdtSalePrice1(localCursor.getFloat(localCursor
+					.getColumnIndex("PdtSalePrice1")));
+			locald_Product.setPdtSalePrice2(localCursor.getFloat(localCursor
+					.getColumnIndex("PdtSalePrice2")));
 		}
 		localCursor.close();
 		return locald_Product;
@@ -97,22 +118,28 @@ public class sql_Product {
 
 	public ArrayList<d_Product> queryMenus(String TypeId) {
 		ArrayList<d_Product> localArrayList = new ArrayList<d_Product>();
-		
-
-		
-		Cursor localCursor = this.db.rawQuery(
-				"select * from Product  where TypeId='" + Integer.parseInt(TypeId)
-						+ "' order by PdtCode", null);
+		Cursor localCursor = this.db
+				.rawQuery(
+						"select * from Product  where TypeId='"
+								+ Integer.parseInt(TypeId)
+								+ "' order by PdtCode", null);
 		while (localCursor.moveToNext()) {
 			d_Product locald_Product = new d_Product();
-			
-			locald_Product.setPdtID(localCursor.getString(localCursor.getColumnIndex("PdtID")));
-			locald_Product.setPdtCode(localCursor.getString(localCursor.getColumnIndex("PdtCode")));
-			locald_Product.setPdtName(localCursor.getString(localCursor.getColumnIndex("PdtName")));
-			locald_Product.setPdtPy(localCursor.getString(localCursor.getColumnIndex("PdtPy")));
-			locald_Product.setPdtUnit(localCursor.getString(localCursor.getColumnIndex("PdtUnit")));
-			locald_Product.setPdtSalePrice1(localCursor.getFloat(localCursor.getColumnIndex("PdtSalePrice1")));
-			locald_Product.setPdtSalePrice2(localCursor.getFloat(localCursor.getColumnIndex("PdtSalePrice2")));
+
+			locald_Product.setPdtID(localCursor.getString(localCursor
+					.getColumnIndex("PdtID")));
+			locald_Product.setPdtCode(localCursor.getString(localCursor
+					.getColumnIndex("PdtCode")));
+			locald_Product.setPdtName(localCursor.getString(localCursor
+					.getColumnIndex("PdtName")));
+			locald_Product.setPdtPy(localCursor.getString(localCursor
+					.getColumnIndex("PdtPy")));
+			locald_Product.setPdtUnit(localCursor.getString(localCursor
+					.getColumnIndex("PdtUnit")));
+			locald_Product.setPdtSalePrice1(localCursor.getFloat(localCursor
+					.getColumnIndex("PdtSalePrice1")));
+			locald_Product.setPdtSalePrice2(localCursor.getFloat(localCursor
+					.getColumnIndex("PdtSalePrice2")));
 			localArrayList.add(locald_Product);
 		}
 		localCursor.close();
@@ -124,7 +151,7 @@ public class sql_Product {
 	}
 
 	public Cursor recordlist3(String paramString) {
-		
+
 		return this.db.rawQuery(paramString, null);
 	}
 
@@ -141,16 +168,16 @@ public class sql_Product {
 		arrayOfObject[7] = paramd_Product.getPdtGg();
 		arrayOfObject[8] = paramd_Product.getPdtID();
 		arrayOfObject[9] = paramd_Product.getPdtInMix();
-		
+
 		arrayOfObject[10] = paramd_Product.getPdtMCode();
 		arrayOfObject[11] = paramd_Product.getPdtMakeTime();
 		arrayOfObject[12] = paramd_Product.getPdtName();
 		arrayOfObject[13] = paramd_Product.getPdtNoShow();
 		arrayOfObject[14] = paramd_Product.getPdtPayType();
 		arrayOfObject[15] = paramd_Product.getPdtPy();
-		
+
 		arrayOfObject[16] = df.format(paramd_Product.getPdtSalePrice1());
-		
+
 		arrayOfObject[17] = paramd_Product.getPdtSalePrice2();
 		arrayOfObject[18] = paramd_Product.getPdtUnit();
 		arrayOfObject[19] = paramd_Product.getPdtisSet();
@@ -163,13 +190,15 @@ public class sql_Product {
 		arrayOfObject[26] = paramd_Product.getpdtdownprice1();
 		arrayOfObject[27] = paramd_Product.getpdtdownprice2();
 		arrayOfObject[28] = paramd_Product.getPdtInPrice();
-		
-		localSQLiteDatabase
-				.execSQL(
-						"INSERT INTO Product(departId, pdtAccType, pdtAutoInc,pdtCanUsed, pdtCanZk, pdtChangePrice,"
-								+ "pdtCode, pdtGg, pdtID, pdtInMix, pdtMCode, pdtMakeTime,pdtName, pdtNoShow, pdtPayType, pdtPy, pdtSalePrice1, pdtSalePrice2, pdtUnit,"
-								+ " pdtisSet, typeId, minrebate, notout, notshow,  notshowonbill,  pdtchgNumber, pdtdownprice1,  pdtdownprice2,pdtInPrice) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-						arrayOfObject);
+		if (!TextUtils.isEmpty(paramd_Product.getPdtCode())) {
+			localSQLiteDatabase
+					.execSQL(
+							"INSERT INTO Product(departId, pdtAccType, pdtAutoInc,pdtCanUsed, pdtCanZk, pdtChangePrice,"
+									+ "pdtCode, pdtGg, pdtID, pdtInMix, pdtMCode, pdtMakeTime,pdtName, pdtNoShow, pdtPayType, pdtPy, pdtSalePrice1, pdtSalePrice2, pdtUnit,"
+									+ " pdtisSet, typeId, minrebate, notout, notshow,  notshowonbill,  pdtchgNumber, pdtdownprice1,  pdtdownprice2,pdtInPrice) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+							arrayOfObject);
+		}
+//		localSQLiteDatabase.close();
 	}
 
 	public void update(d_Product paramd_Product) {
@@ -184,5 +213,6 @@ public class sql_Product {
 				.execSQL(
 						"update Product set PdtName=?,PdtUnit=?,PdtSalePrice1=?,PdtSalePrice2=? where PdtCode=?",
 						arrayOfObject);
+		localSQLiteDatabase.close();
 	}
 }

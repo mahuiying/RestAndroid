@@ -29,29 +29,36 @@ public class PayBillBillAdapter<T> extends CommomAdapter<T> {
 	@Override
 	public void convert(final ViewHolder holder, T t) {
 		ds = (d_SaleRecord) t;
-		holder.setText(R.id.qty_item, "1/"+ds.getCustomerNo()).setText(R.id.dish_item, ds.getPdtName()).setText(
-				R.id.dish_price,
-				(decimalFormat.format(ds.getPrice() * ds.getNumber()
-						/ ds.getCustomerNo()))).setTag(R.id.bt_delete_item, ds.getItemNo()+","+ds.getBILLID());
+		holder.setText(R.id.qty_item, "1/" + ds.getContactNumber())
+				.setText(R.id.dish_item, ds.getPdtName())
+				.setText(
+						R.id.dish_price,
+						(decimalFormat.format(ds.getPrice() * ds.getNumber()
+								/ ds.getContactNumber())))
+				.setTag(R.id.bt_delete_item, ds.getItemNo() + "," + "");    // ds.getBILLID()
 
 		// 删除当前菜
 		holder.getView(R.id.bt_delete_item).setOnClickListener(
 				new OnClickListener() {
 					@Override
 					public void onClick(View arg0) {
-						String value[] =  arg0.getTag().toString().split(",");
-						delete(value[1],value[0]);
-						for(int j=0 ; j < ((PayBillActivity) mContext).views.size() ; j++){
-							((PayBillActivity) mContext).adapters.get(j).mDatas = (List<d_SaleRecord>)((PayBillActivity) mContext) .getSaleRecordsCustomer1(j);
-							((PayBillActivity) mContext).adapters.get(j).notifyDataSetChanged();
+						String value[] = arg0.getTag().toString().split(",");
+						delete(value[1], value[0]);
+						for (int j = 0; j < ((PayBillActivity) mContext).views
+								.size(); j++) {
+							((PayBillActivity) mContext).adapters.get(j).mDatas = (List<d_SaleRecord>) ((PayBillActivity) mContext)
+									.getSaleRecordsCustomer1(j);
+							((PayBillActivity) mContext).adapters.get(j)
+									.notifyDataSetChanged();
 							((PayBillActivity) mContext).initData(j);
 						}
-						((PayBillActivity)mContext).sladapter.mDatas= (List<d_SaleRecord>)((PayBillActivity) mContext).getSaleRecordsAll();
-						((PayBillActivity)mContext).sladapter.notifyDataSetChanged();
+						((PayBillActivity) mContext).sladapter.mDatas = (List<d_SaleRecord>) ((PayBillActivity) mContext)
+								.getSaleRecordsAll();
+						((PayBillActivity) mContext).sladapter
+								.notifyDataSetChanged();
 					}
 				});
-	} 
-
+	}
 	private void delete(String customNo, String ItemNo) {
 		new sql_SaleRecord()
 				.recordlist5("delete  from Customer  where  ItemNo='" + ItemNo

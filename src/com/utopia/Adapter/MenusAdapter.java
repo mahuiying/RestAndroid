@@ -23,21 +23,22 @@ import com.utopia.activity.R;
 import com.utopia.utils.Constant;
 import com.utopia.widget.MyTextView;
 
-public class MenusAdapter extends BaseAdapter implements
-		View.OnClickListener {
+public class MenusAdapter extends BaseAdapter implements View.OnClickListener {
 	private Context context;
 	private boolean mBusy = false;
 	public Cursor m_CallCursor;
 	private String m_sql = "";
-	private String table ;
-	DecimalFormat decimalFormat=new DecimalFormat("0.00");//构造方法的字符格式这里如果小数不足2位,会以0补足.
-	public MenusAdapter(Context paramContext , String table) {
+	private String table;
+	DecimalFormat decimalFormat = new DecimalFormat("0.00");// 构造方法的字符格式这里如果小数不足2位,会以0补足.
+
+	public MenusAdapter(Context paramContext, String table) {
 		this.context = paramContext;
-		this.table = table ;
+		this.table = table;
 		this.m_sql = "select PdtID,PdtCode,PdtName,PdtUnit,PdtSalePrice1,PdtSalePrice2 from Product limit 1,20";
 		this.m_CallCursor = new sql_Product().recordlist3(this.m_sql);
 	}
 
+	@SuppressWarnings("deprecation")
 	public void additem(AbsListView paramAbsListView, int paramInt1,
 			int paramInt2) {
 		int i = 0;
@@ -49,12 +50,22 @@ public class MenusAdapter extends BaseAdapter implements
 		if (localAppItem != null) {
 			this.m_CallCursor.moveToPosition(paramInt1 + i);
 			locald_Product = new d_Product();
-			locald_Product.setPdtID(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("PdtID")));
-			locald_Product.setPdtCode(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("PdtCode")));
-			locald_Product.setPdtName(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("PdtName")));
-			locald_Product.setPdtUnit(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("PdtUnit")));
-			locald_Product.setPdtSalePrice1(this.m_CallCursor.getFloat(this.m_CallCursor.getColumnIndex("PdtSalePrice1")));
-			locald_Product.setPdtSalePrice2(this.m_CallCursor.getFloat(this.m_CallCursor.getColumnIndex("PdtSalePrice2")));
+			locald_Product.setPdtID(this.m_CallCursor
+					.getString(this.m_CallCursor.getColumnIndex("PdtID")));
+			locald_Product.setPdtCode(this.m_CallCursor
+					.getString(this.m_CallCursor.getColumnIndex("PdtCode")));
+			locald_Product.setPdtName(this.m_CallCursor
+					.getString(this.m_CallCursor.getColumnIndex("PdtName")));
+			locald_Product.setPdtUnit(this.m_CallCursor
+					.getString(this.m_CallCursor.getColumnIndex("PdtUnit")));
+			locald_Product
+					.setPdtSalePrice1(this.m_CallCursor
+							.getFloat(this.m_CallCursor
+									.getColumnIndex("PdtSalePrice1")));
+			locald_Product
+					.setPdtSalePrice2(this.m_CallCursor
+							.getFloat(this.m_CallCursor
+									.getColumnIndex("PdtSalePrice2")));
 			String str = this.context.getApplicationContext().getFilesDir()
 					.getParent()
 					+ "/pic/z_" + locald_Product.getPdtCode().trim() + ".jpg";
@@ -121,24 +132,32 @@ public class MenusAdapter extends BaseAdapter implements
 			localAppItem2.m_mask = ((LinearLayout) localView
 					.findViewById(R.id.grid_mask_but));
 			localAppItem2.m_pic.setScaleType(ImageView.ScaleType.CENTER_CROP);
-			localAppItem2.add = (ImageButton) localView.findViewById(R.id.addBtnRecom);
-			localAppItem2.sub = (ImageButton) localView.findViewById(R.id.cutBtnRecom);
+			localAppItem2.add = (ImageButton) localView
+					.findViewById(R.id.addBtnRecom);
+			localAppItem2.sub = (ImageButton) localView
+					.findViewById(R.id.cutBtnRecom);
 			localView.setTag(localAppItem2);
 			paramView = localView;
 		}
 
 		this.m_CallCursor.moveToPosition(paramInt);
 		d_Product locald_Product = new d_Product();
-		locald_Product.setPdtID(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("PdtID")));
-		locald_Product.setPdtCode(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("PdtCode")));
-		locald_Product.setPdtName(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("PdtName")));
-		locald_Product.setPdtUnit(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("PdtUnit")));
-		locald_Product.setPdtSalePrice1(this.m_CallCursor.getFloat(this.m_CallCursor.getColumnIndex("PdtSalePrice1")));
-		locald_Product.setPdtSalePrice2(this.m_CallCursor.getFloat(this.m_CallCursor.getColumnIndex("PdtSalePrice2")));
+		locald_Product.setPdtID(this.m_CallCursor.getString(this.m_CallCursor
+				.getColumnIndex("PdtID")));
+		locald_Product.setPdtCode(this.m_CallCursor.getString(this.m_CallCursor
+				.getColumnIndex("PdtCode")));
+		locald_Product.setPdtName(this.m_CallCursor.getString(this.m_CallCursor
+				.getColumnIndex("PdtName")));
+		locald_Product.setPdtUnit(this.m_CallCursor.getString(this.m_CallCursor
+				.getColumnIndex("PdtUnit")));
+		locald_Product.setPdtSalePrice1(this.m_CallCursor
+				.getFloat(this.m_CallCursor.getColumnIndex("PdtSalePrice1")));
+		locald_Product.setPdtSalePrice2(this.m_CallCursor
+				.getFloat(this.m_CallCursor.getColumnIndex("PdtSalePrice2")));
 		AppItem localAppItem1 = (AppItem) paramView.getTag();
 		localAppItem1.m_name.setText(locald_Product.getPdtName());
 		localAppItem1.m_price.setText(decimalFormat.format(locald_Product
-				.getPdtSalePrice1())); 
+				.getPdtSalePrice1()));
 		if (!this.mBusy) {
 			localAppItem1.m_name.setTag(locald_Product);
 			localAppItem1.m_pic.setTag(locald_Product);
@@ -148,7 +167,7 @@ public class MenusAdapter extends BaseAdapter implements
 			localAppItem1.sub.setTag(locald_Product);
 			localAppItem1.add.setOnClickListener(this);
 			localAppItem1.sub.setOnClickListener(this);
-			
+
 			localAppItem1.m_mask.setTag(locald_Product);
 			localAppItem1.m_mask.setOnClickListener(this);
 		}
@@ -157,51 +176,51 @@ public class MenusAdapter extends BaseAdapter implements
 
 	public void onClick(View paramView) {
 		if (paramView.getId() == R.id.dishImgRecom) {
-			d_Product locald_Product = (d_Product) paramView.getTag();
+			// d_Product locald_Product = (d_Product) paramView.getTag();
 			// Intent localIntent = new Intent(this.context, Details.class);
 			// localIntent.putExtra("menuSql", this.m_sql);
 			// localIntent.putExtra("menuDef", locald_Product);
 			// this.context.startActivity(localIntent);
 			Constant.mainmgpic = true;
-			if(table.equals("Select Tables")){
+			if (table.equals("Select Tables")) {
 				showCustomToast("Please select tables");
-			}else{
-				//new pop_order(this.context, paramView, false);				
+			} else {
+				// new pop_order(this.context, paramView, false);
 			}
 		}
-		
+
 		if (paramView.getId() == R.id.addBtnRecom) {
-			d_Product locald_Product = (d_Product) paramView.getTag();
+			// d_Product locald_Product = (d_Product) paramView.getTag();
 			// Intent localIntent = new Intent(this.context, Details.class);
 			// localIntent.putExtra("menuSql", this.m_sql);
 			// localIntent.putExtra("menuDef", locald_Product);
 			// this.context.startActivity(localIntent);
 			Constant.mainmgpic = true;
-			if(table.equals("Select Tables")){
+			if (table.equals("Select Tables")) {
 				showCustomToast("Please select tables");
-			}else{
-				//new pop_order(this.context, paramView, false);				
+			} else {
+				// new pop_order(this.context, paramView, false);
 			}
 		}
 		if (paramView.getId() == R.id.cutBtnRecom) {
-			d_Product locald_Product = (d_Product) paramView.getTag();
+			// d_Product locald_Product = (d_Product) paramView.getTag();
 			// Intent localIntent = new Intent(this.context, Details.class);
 			// localIntent.putExtra("menuSql", this.m_sql);
 			// localIntent.putExtra("menuDef", locald_Product);
 			// this.context.startActivity(localIntent);
 			Constant.mainmgpic = true;
-			if(table.equals("Select Tables")){
+			if (table.equals("Select Tables")) {
 				showCustomToast("Please select tables");
-			}else{
-				//new pop_order(this.context, paramView, false);				
+			} else {
+				// new pop_order(this.context, paramView, false);
 			}
 		}
-		
+
 		if (paramView.getId() == R.id.grid_mask_but)
-			if(table.equals("Select Tables")){
+			if (table.equals("Select Tables")) {
 				showCustomToast("Please select tables");
-			}else{
-				//new pop_order(this.context, paramView, false);				
+			} else {
+				// new pop_order(this.context, paramView, false);
 			}
 	}
 
@@ -235,14 +254,15 @@ public class MenusAdapter extends BaseAdapter implements
 		toast.setView(toastRoot);
 		toast.show();
 	}
-	
+
 	class AppItem {
 		LinearLayout m_mask;
 		TextView m_name;
 		ImageView m_pic;
 		TextView m_price;
-		ImageButton add ; 
-		ImageButton sub ; 
+		ImageButton add;
+		ImageButton sub;
+
 		AppItem() {
 		}
 	}

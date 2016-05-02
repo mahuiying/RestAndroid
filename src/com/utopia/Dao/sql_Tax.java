@@ -3,14 +3,12 @@ package com.utopia.Dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.utopia.Model.d_Bill;
-import com.utopia.Model.d_Tax;
-import com.utopia.utils.Constant;
-import com.utopia.utils.DateUtils;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.utopia.Model.d_Tax;
+import com.utopia.utils.Constant;
 
 public class sql_Tax {
 	Context context;

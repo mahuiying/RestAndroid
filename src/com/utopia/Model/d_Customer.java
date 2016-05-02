@@ -2,9 +2,9 @@ package com.utopia.Model;
 
 public class d_Customer {
 	private int id;
-	private int customNo; 
-	private int ItemNo ;   
-	
+	private String customNo; 
+	//private String ItemNo ;   
+	private int ItemNo; //一个销售纪录上每道菜的id
 	
 	
 	public d_Customer() {
@@ -12,10 +12,11 @@ public class d_Customer {
 	}
  
 
-	public d_Customer(int id, int customNo, int itemNo ) {
+	public d_Customer( String customNo, int itemNo ) {
 		super();
-		this.id = id;
+		//this.id = id;
 		this.customNo = customNo; 
+		this.ItemNo=itemNo;
 	}
 
 
@@ -24,23 +25,28 @@ public class d_Customer {
 		return id;
 	}
 
-	public int getItemNo() {
+//	public String getItemNo() {
+//		return ItemNo;
+//	}
+//
+//	public void setItemNo(String itemNo) {
+//		ItemNo = itemNo;
+//	}
+	public int getItemNo(){
 		return ItemNo;
 	}
-
-	public void setItemNo(int itemNo) {
-		ItemNo = itemNo;
-	}
-
+    public void setItemNo(int itemNo){
+    	this.ItemNo=itemNo;
+    }
 	public void setId(int id) {
 		this.id = id;
 	}
-
-	public int getCustomNo() {
+    
+	public String getCustomNo() {
 		return customNo;
 	}
 
-	public void setCustomNo(int customNo) {
+	public void setCustomNo(String customNo) {
 		this.customNo = customNo;
 	}
 

@@ -1,21 +1,14 @@
 package com.utopia.activity;
 
-import java.util.Date;
-
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle; 
-import android.view.KeyEvent;
+import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.utopia.Base.BaseActivity;
-import com.utopia.Dao.sql_Bill;
 import com.utopia.Dao.sql_Cashier;
 import com.utopia.Model.d_Cashier;
-import com.utopia.Service.HomeKeyLocker;
 import com.utopia.utils.Constant;
 import com.utopia.utils.DateUtils;
 import com.utopia.utils.ExitApplication;
@@ -26,19 +19,19 @@ public class DropsActivity extends BaseActivity implements OnClickListener {
 	private TextView editText;
 	private String dropsMoney;
 	private String curMoney = "0";
-	private HomeKeyLocker mHomeKeyLocker;
+
+	// private HomeKeyLocker mHomeKeyLocker;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.drops);
-		ExitApplication.getInstance().addActivity(this);// 加入退出栈  
+		ExitApplication.getInstance().addActivity(this);// 加入退出栈
 
 		initViews();
 		initEvents();
 	}
-   
+
 	@Override
 	public void onClick(View view) {
 		switch (view.getId()) {

@@ -1,7 +1,6 @@
 package com.utopia.Dialog;
 
 import java.text.DecimalFormat;
-import java.util.regex.Pattern;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -18,10 +17,10 @@ public class pop_Input implements View.OnClickListener {
 	PopupWindow popupWindow;
 	private TextView discount;
 	private String tax_rate_view = "0";
-	private View add;
+//	private View add;
 	DecimalFormat decimalFormat = new DecimalFormat("0.00");// 构造方法的字符格式这里如果小数不足2位,会以0补足.
-	private double subtotal;
-	private TextView tips, totalAndTips;
+//	private double subtotal;
+//	private TextView tips, totalAndTips;
 	private int tag = 1;
 
 	private EditText tipAmount, PaidAmount;

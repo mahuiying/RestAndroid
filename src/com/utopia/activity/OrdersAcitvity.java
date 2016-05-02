@@ -7,14 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -29,24 +25,21 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.content.DialogInterface;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AbsListView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.RadioButton;
-import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,11 +49,14 @@ import com.utopia.Adapter.MenuBillAdapter1;
 import com.utopia.Adapter.OrdersSalerecordAdapter;
 import com.utopia.Adapter.OrdersSalerecordAdapter.AppItem;
 import com.utopia.Base.BaseActivity;
+import com.utopia.Dao.sql_Bill;
 import com.utopia.Dao.sql_Contact;
 import com.utopia.Dao.sql_Customer;
 import com.utopia.Dao.sql_MenuType;
 import com.utopia.Dao.sql_Product;
 import com.utopia.Dao.sql_SaleRecord;
+import com.utopia.Dao.sql_Saleandpdt;
+import com.utopia.Dao.sql_Sales;
 import com.utopia.Dialog.TimeDialog;
 import com.utopia.Dialog.pop_Input;
 import com.utopia.Dialog.pop_discount;
@@ -71,8 +67,9 @@ import com.utopia.Model.d_Customer;
 import com.utopia.Model.d_Desk;
 import com.utopia.Model.d_MenuType;
 import com.utopia.Model.d_Product;
+import com.utopia.Model.d_Sale;
 import com.utopia.Model.d_SaleRecord;
-import com.utopia.Model.d_Tax;
+import com.utopia.Model.d_Saleandpdt;
 import com.utopia.Service.BluetoothService;
 import com.utopia.manager.DeskManager;
 import com.utopia.utils.Constant;
@@ -82,6 +79,7 @@ import com.utopia.utils.JsonResolveUtils;
 import com.utopia.widget.MyDialog;
 import com.utopia.widget.MyScrollLayout;
 
+@SuppressLint("HandlerLeak")
 public class OrdersAcitvity extends BaseActivity implements
 		View.OnClickListener {
 	private GridLayout menuTypes;
@@ -104,47 +102,51 @@ public class OrdersAcitvity extends BaseActivity implements
 	private TextView subTotal; // subtotal
 	private Button save_and_quit, clear_table; // 保存并且退出
 	private Button send; // 发送菜品至后台
-	private Button schedule;//设置发送到厨房的时间
+	private Button schedule;// 设置发送到厨房的时间
 	private Button order_menu;//
 	private TextView total;
 	private String md5; // 该桌客人对应的MD5 ， 作为BillId
 	private TextView discount, custom_name;
 	d_Bill tBill = new d_Bill();
-
-	private PopupWindow popupWindow;
-	private ListView lv_group, localListView;
-	private View view;
-	private List<d_Tax> taxs = null;
+	private int currentBill = 0;
+	// private int billAdd = 0, billDelete = 0;
+	// private PopupWindow popupWindow;
+	// private ListView lv_group;
+	private ListView localListView;
+	// private View view;
+	// private List<d_Tax> taxs = null;
 	private MyDialog mBackDialog;
 	DecimalFormat decimalFormat = new DecimalFormat("0.00");// 构造方法的字符格式这里如果小数不足2位,会以0补足.
 	private int currentPage = 1;// 当前界面标记
-	private float tax = (float) 1.0;
+	// private float tax = (float) 1.0;
 	private View menu;
-	private PopupWindow popup;
+	// private PopupWindow popup;
 	private GradientDrawable drawable = new GradientDrawable();
 	private MyDialog recoveryDialog;
 	public List<MenuBillAdapter1<d_SaleRecord>> adapters = new ArrayList<MenuBillAdapter1<d_SaleRecord>>();
 
-	private RelativeLayout drops;
-	private RelativeLayout pay_out;
-	private RelativeLayout personal_report;
-	private RelativeLayout purchase;
-	private RelativeLayout close_shift;
-	private LinearLayout menu_setting;
+	// private RelativeLayout drops;
+	// private RelativeLayout pay_out;
+	// private RelativeLayout personal_report;
+	// private RelativeLayout purchase;
+	// private RelativeLayout close_shift;
+	// private LinearLayout menu_setting;
 	private LinearLayout menu_liquors;
 	private LinearLayout menu_regular_tables;
 	private LinearLayout menu_sushi_bar;
 	private LinearLayout menu_take_out;
 	private LinearLayout menu_dilivery;
-	
-	private View settings;
+
+	// private View settings;
 	private View preSelectView = null;
 	private d_SaleRecord preSelectItem;
+	// private d_Sale preSale;
+	// private d_Saleandpdt preSaleItem;
 	public List<View> views = new ArrayList<View>();
 	// --------------------------------contact
 	private AutoCompleteTextView customer_name;
 	private AutoCompleteTextView customer_phone;
-
+	private TextView contact_name;
 	private EditText add_number, add_street, add_apt, add_city, add_state,
 			add_code;
 	private EditText card_number, card_date, card_cvv, fname, lname;
@@ -158,12 +160,13 @@ public class OrdersAcitvity extends BaseActivity implements
 	private String addString = "-";
 	private boolean isRun = false;
 	private List<d_SaleRecord> saleList;
+
 	// ---------------------------------------------payout
 	private Button add_btn;
 	private LinearLayout bill_layout;
 
 	private int printer_counter = 0;
-
+	private int pay_counter = 0;
 	// ////////-----------------------------------printer
 	// Message types sent from the BluetoothService Handler
 	public static final int MESSAGE_STATE_CHANGE = 1;
@@ -176,33 +179,40 @@ public class OrdersAcitvity extends BaseActivity implements
 	public static final String TOAST = "toast";
 	// Intent request codes
 	public static final int REQUEST_CONNECT_DEVICE = 1;
-	private static final int REQUEST_ENABLE_BT = 2;
+	// private static final int REQUEST_ENABLE_BT = 2;
 	private BluetoothAdapter mBluetoothAdapter = null;
 	// Member object for the services
 	private BluetoothService mService = null;
-
+	private int currentPrintPage = 0;
 	private ImageView goback;
+	// private String salerecordId = null;
+	private int priority_cnt = 0;
 
+	private int foodVisibleItem;// 菜的listView第一个可见条目
+	// private int billVisibleItem;
+	private List<ListView> listViews_bill = new ArrayList<ListView>();
+	private List<ListView> listViews_billAndFood = new ArrayList<ListView>();
+
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle paramBundle) {
 		super.onCreate(paramBundle);
 		setContentView(R.layout.guloop);
 		ExitApplication.getInstance().addActivity(this);// 加入退出栈
 		currentPage = getIntent().getIntExtra("currentPage", 1);
-
-		md5(); // 得到md5 , 使得一个桌子一个md5
+		openSales();
+		// md5(); // 得到md5 , 使得一个桌子一个md5
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		if (mBluetoothAdapter == null) {
 			Toast.makeText(getApplicationContext(), "打印机不可用",
 					Toast.LENGTH_SHORT).show();
 		}
-		settings = this.getLayoutInflater().inflate(
-				R.layout.layout_menu_setting, null);
+		// settings = this.getLayoutInflater().inflate(
+		// R.layout.layout_menu_setting, null);
 		new sql_Customer().delete("delete from Customer");// 清空bill
 		(new sql_SaleRecord()).updateAllCustomerNo();
 		initViews();
 		initEvents();
-
 		curPage.getLayoutParams().height = this.getWindowManager()
 				.getDefaultDisplay().getHeight() * 7 / 8;
 		curPage.setPageListener(new MyScrollLayout.PageListener() {
@@ -220,8 +230,37 @@ public class OrdersAcitvity extends BaseActivity implements
 		}
 		initlist();
 		initManager();
-		
-	    
+
+	}
+  /*
+   * 新建一条销售记录
+   */
+	public void openSales() {
+		Cursor m_CallCursor;
+		m_CallCursor = (new sql_SaleRecord())
+				.recordlist3("select itemNo from SaleRecord as s1 join saleandpdt as s2 on s1.itemNo=s2.salerecordId"
+						+ " where deskName='"
+						+ Constant.table_id
+						+ "' and createTime=(select max( createTime ) from SaleRecord where deskName='"
+						+ Constant.table_id
+						+ "'"
+						+ " and s2.status1!='Finish')");
+		if (m_CallCursor.getCount() == 0) {
+			Log.i("tag", Constant.Area);
+			md5 = UUID.randomUUID().toString().subSequence(0, 8).toString();
+			String currentTime = DateUtils.getDateEN();
+			(new sql_Sales()).insertSalerecord(md5, Constant.table_id,
+					currentTime, Constant.currentStaff.getS_account(),
+					Constant.Area);
+			createSales(currentTime, md5);
+
+			Log.i("tag", "该销售纪录不存在。。。");
+		} else {
+			m_CallCursor.moveToFirst();
+			md5 = m_CallCursor.getString(0);
+			Log.i("tag", "该销售纪录存在。=" + md5 + "。。。");
+		}
+		m_CallCursor.close();
 	}
 
 	@Override
@@ -232,36 +271,37 @@ public class OrdersAcitvity extends BaseActivity implements
 		deskManager = new DeskManager(getApplicationContext());
 	}
 
-	private void md5() {
-		Cursor m_CallCursor;
-		m_CallCursor = new sql_SaleRecord()
-				.recordlist3("select BillId,itemNo,pdtCode,pdtName,number,price,otherspec1,otherspec2,status1,otherspec0,tax , rebate from "
-						+ "SaleRecord as s1 join saleandpdt as s2 on s1.itemNo=s2.salerecordId" +
-						"saleandpdt as s2 join Bill as b on s2.salerecordId=b.salerecordId  where deskName='"
-						+ Constant.table_id
-						+ "'and status1!='Finish'");
-		// 若无菜单 ， 则md5使用上一个页面传过来的md5
-		if (m_CallCursor.getCount() == 0) {
-			
-			md5 = UUID.randomUUID().toString().subSequence(0, 8).toString();
-		} else // 若是有菜单， 则md5使用当前菜单的md5
-		{
-			m_CallCursor.moveToPosition(0);
-			if (m_CallCursor.getString(m_CallCursor.getColumnIndex("BILLID"))
-					.equals("")) {
-				md5 = UUID.randomUUID().toString().subSequence(0, 8).toString();
-			} else
-				md5 = m_CallCursor.getString(m_CallCursor
-						.getColumnIndex("BILLID"));
-		}
-
-		m_CallCursor.close();
-	}
+	// private void md5() {
+	// Cursor m_CallCursor;
+	// m_CallCursor = new sql_SaleRecord()
+	// .recordlist3("select BillId,itemNo,pdtCode,pdtName,number,price,otherspec1,otherspec2,status1,otherspec0,tax , rebate from "
+	// + "SaleRecord as s1 join saleandpdt as s2 on s1.itemNo=s2.salerecordId" +
+	// "saleandpdt as s2 join Bill as b on s2.salerecordId=b.salerecordId  where deskName='"
+	// + Constant.table_id
+	// + "' and status1!='Finish'");
+	// // 若无菜单 ， 则md5使用上一个页面传过来的md5
+	// if (m_CallCursor.getCount() == 0) {
+	//
+	// md5 = UUID.randomUUID().toString().subSequence(0, 8).toString();
+	// } else // 若是有菜单， 则md5使用当前菜单的md5
+	// {
+	//
+	// m_CallCursor.moveToPosition(0);
+	// if (m_CallCursor.getString(m_CallCursor.getColumnIndex("BillId"))
+	// .equals("")) {
+	// md5 = UUID.randomUUID().toString().subSequence(0, 8).toString();
+	// } else
+	// md5 = m_CallCursor.getString(m_CallCursor
+	// .getColumnIndex("BillId"));
+	// }
+	//
+	// m_CallCursor.close();
+	// }
 
 	@Override
 	public void onClick(View paramView) {
 		switch (paramView.getId()) {
-		// 结账
+		// 结账 (pay)
 		case R.id.check_out:
 			if (new sql_SaleRecord().getNotCheckedNum() > 0) {
 				PrintDialog();
@@ -279,6 +319,7 @@ public class OrdersAcitvity extends BaseActivity implements
 				currentPage = 3;
 				initViews();
 			}
+			discount_btn.setEnabled(false);
 			break;
 		case R.id.order_menu:
 			currentPage = 1;
@@ -291,68 +332,118 @@ public class OrdersAcitvity extends BaseActivity implements
 			break;
 		// 保存退出
 		case R.id.save_and_quit:
+			changeState();
 			openDesk();
 			finish();
 			break;
-		//case R.id.priority:
-			
+		// 设置该桌菜为加急
+		case R.id.priority:
+			// if (table_priority.isChecked()) {
+			// showCustomToast("The operation is forbidden, and The desk always set Priority");
+			// } else {
+			// setPriority();
+			// }
+			if (priority_cnt == 0) {
+				setPriority();
+			} else {
+				showCustomToast("The operation is forbidden, and The desk always set Priority");
+			}
+			break;
 		// 发送后台厨房
 		case R.id.send:
-//			if(!table_priority.isChecked()){
-//				setPriorityDialog();
-//				mBackDialog.show();
-//			}
 			openDesk();
 			send();
 			break;
-	    // 设定发送到厨房的时间（当天中大于等于现在的某个时间）
+		// 设定发送到厨房的时间（当天中大于等于现在的某个时间）
 		case R.id.schedule_btn:
-			TextView time_tv=(TextView) findViewById(R.id.sendtime_tv);
-			new TimeDialog(OrdersAcitvity.this,time_tv,schedule);
-		    
-			//openDesk();
-		    //send();
-		    break;
+			TextView time_tv = (TextView) findViewById(R.id.sendtime_tv);
+			new TimeDialog(OrdersAcitvity.this, time_tv, schedule);
+			// openDesk();
+			// send();
+			break;
 		case R.id.taxEdit:
 			break;
 		case R.id.main_btn:// add bill
 			if (add_btn.getText().toString().equals("")) {
-				if (preSelectItem.getStatus().equals("Not Sent")) {
-					showDeleteDialog();
+				if (preSelectItem != null) {
+					if (preSelectItem.getStatus1().equals("Not Sent")) {
+						showDeleteDialog();
+					} else {
+						showCustomToast("Prohibit operating , only allow delete 'Not Sent item'");
+					}
 				} else {
-					showCustomToast("Prohibit operating , only allow delete 'Not Sent item'");
+					showCustomToast("You don't choose any item!");
 				}
 			} else {
-				AddmenuList();
+				if (printer_counter > 0 || pay_counter > 0) {
+					showCustomToast("Prohibit operating");
+				} else {
+					AddmenuList();
+				}
 			}
 			break;
 		case R.id.discount_btn:
-			 
-			  new pop_discount(OrdersAcitvity.this, discount, Constant.table_id);
-			
+			new pop_discount(OrdersAcitvity.this, discount, Constant.table_id);
 			break;
 		}
 
 	}
-	private void setPriorityDialog() {
-		mBackDialog = MyDialog.getDialog(OrdersAcitvity.this, "Hint",
-				"Set Priority?", "OK",
-				new DialogInterface.OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-						table_priority.setChecked(true);
+	private void changeState() {
+		putAsyncTask(new AsyncTask<Void, Void, Boolean>() {
+			private String itemNo; // 当前销售纪录的id
+
+			@Override
+			protected void onPreExecute() {
+				super.onPreExecute();
+			}
+
+			@Override
+			protected Boolean doInBackground(Void... params) {
+				int ans = 0;
+				itemNo = (new sql_SaleRecord()).getDeskId(Constant.table_id);
+				List<d_Saleandpdt> sales = (new sql_Saleandpdt())
+						.getDeskSalesDone(itemNo);
+				if (sales.size() < 1)
+					return false;
+				for (int i = 0; i < sales.size(); i++) {
+					sales.get(i).setStatus("Delivered");
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
-				}, "Cancel", new DialogInterface.OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();
+					Boolean flag = new JsonResolveUtils(OrdersAcitvity.this)
+							.setSaleandpdtDelivered(sales.get(i),
+									Constant.desk_name);
+					if (flag == true) {
+						ans++;
 					}
-				});
-		mBackDialog.setButton1Background(R.drawable.btn_default_popsubmit);
+				}
+				if (ans == sales.size())
+					return true;//
+				else
+					return false;
+			}
 
+			@Override
+			protected void onPostExecute(Boolean result) {
+				super.onPostExecute(result);
+				if (!result) {
+					return;
+				} else {
+					Log.i("tag", "delivered");
+					new sql_SaleRecord().update_delivered(itemNo, "Delivered");
+					try {
+						Thread.sleep(500);
+						finish();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
 	}
 
 	private void showDeleteDialog() {
@@ -363,8 +454,9 @@ public class OrdersAcitvity extends BaseActivity implements
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						dialog.dismiss();
-						new sql_SaleRecord().delete(Constant.table_id,
-								preSelectItem.getPdtName());
+						new sql_SaleRecord().deletePreSelect(preSelectItem
+								.getId());
+						Log.i("tag", "要删除的菜的id" + preSelectItem.getId());
 						Refresh();
 					}
 				}, "Cancel", new DialogInterface.OnClickListener() {
@@ -402,7 +494,6 @@ public class OrdersAcitvity extends BaseActivity implements
 		} else {
 			deskManager.setDesk(tdesk);
 		}
-
 	}
 
 	// 自定义对话框
@@ -516,12 +607,32 @@ public class OrdersAcitvity extends BaseActivity implements
 		if (sladapter == null)
 			sladapter = new OrdersSalerecordAdapter(this, Constant.table_id);
 		localListView.setAdapter(this.sladapter);
-		discount.setText(sladapter.getDiscount()+"");
-		if(Constant.Area.equals("Take Out")||Constant.Area.equals("Delivery")){
-		    Constant.schedule=sladapter.getCreateTime();
-		    ((TextView)findViewById(R.id.sendtime_tv)).setText(Constant.schedule);
-		} else{
-			Constant.schedule="";
+		if (sladapter.getContactId() != 0) {
+			Cursor mCursor = (new sql_SaleRecord())
+					.recordlist3("select Name from Contact where id="
+							+ sladapter.getContactId());
+			if (mCursor.moveToFirst()) {
+				contact_name.setText(mCursor.getString(0));
+			}
+
+		}
+		if (sladapter.getDiscount() == 0.0)
+			discount.setText(1.0 + "");
+		else
+			discount.setText(sladapter.getDiscount() + "");
+		if (sladapter.getPriority()) {
+			table_priority.setChecked(true);
+			priority_cnt++;
+		} else {
+			table_priority.setChecked(false);
+		}
+		if (Constant.Area.equals("Take Out")
+				|| Constant.Area.equals("Delivery")) {
+			Constant.schedule = sladapter.getCreateTime();
+			((TextView) findViewById(R.id.sendtime_tv))
+					.setText(Constant.schedule);
+		} else {
+			Constant.schedule = "";
 		}
 		localListView.setOnItemClickListener(new OnItemClickListener() {
 
@@ -538,13 +649,29 @@ public class OrdersAcitvity extends BaseActivity implements
 
 				preSelectItem = item;
 				preSelectView = arg1;
-				if (item.getStatus().equals("Not Sent")) {
+				if (item.getStatus1().equals("Not Sent")) {
 					arg1.setBackgroundColor(Color.parseColor("#f1ffe3"));
+					int id = (new sql_Saleandpdt()).getPreId(item.getPdtCODE(),
+							item.getItemNo(), item.getOtherSpec(),
+							item.getOtherSpecNo1(), item.getOtherSpecNo2());
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					Log.i("tag",
+							item.getItemNo() + "  " + item.getPdtCODE() + "  "
+									+ item.getOtherSpec() + "  "
+									+ item.getOtherSpecNo1() + "  "
+									+ item.getOtherSpecNo2());
 					Intent intent = new Intent(OrdersAcitvity.this,
 							OrderMenuDetialActivity.class);
 					Bundle mBundle = new Bundle();
 					mBundle.putSerializable("d_Product", product);
-					mBundle.putString("md5", md5);
+					// mBundle.putString("md5", md5);
+					mBundle.putString("salerecordId", item.getItemNo());
+					mBundle.putInt("tag", 1); // 标志该菜为需要修改的菜
+					mBundle.putInt("id", id);
 					intent.putExtras(mBundle);
 					startActivity(intent);
 				} else {
@@ -552,14 +679,81 @@ public class OrdersAcitvity extends BaseActivity implements
 				}
 			}
 		});
-		
+		localListView.setOnScrollListener(new OnScrollListener() {
+
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+			}
+
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem,
+					int visibleItemCount, int totalItemCount) {
+
+				foodVisibleItem = firstVisibleItem;
+
+				// 更新位置
+				for (int i = 0; i < listViews_bill.size(); i++) {
+					listViews_bill.get(i).setSelection(foodVisibleItem);
+					listViews_bill.get(i).scrollTo(0, getScrollY());
+				}
+			}
+		});
+		listViews_billAndFood.add(localListView);
+
 	}
+
+	// public void scroll() {
+	// for (int i = 0; i < listViews_bill.size(); i++) {
+	// listViews_bill.get(i).setOnScrollListener(new OnScrollListener() {
+	//
+	// @Override
+	// public void onScrollStateChanged(AbsListView view,
+	// int scrollState) {
+	//
+	// }
+	//
+	// @Override
+	// public void onScroll(AbsListView view, int firstVisibleItem,
+	// int visibleItemCount, int totalItemCount) {
+	//
+	// for (int j = 0; j < listViews_billAndFood.size(); j++) {
+	// listViews_billAndFood.get(j).setSelection(
+	// firstVisibleItem);
+	// listViews_billAndFood.get(j).scrollTo(0,
+	// getScrollY(listViews_billAndFood.get(j)));
+	// }
+	// }
+	// });
+	// }
+	// }
+
+	public int getScrollY() {
+		View c = localListView.getChildAt(0);
+		if (c == null) {
+			return 0;
+		}
+		int firstVisiblePosition = localListView.getFirstVisiblePosition();
+		int top = c.getTop();
+		// return -top + firstVisiblePosition * c.getHeight();
+		return -top + firstVisiblePosition;
+	}
+
+	// public int getScrollY(View c) {
+	// if (c == null) {
+	// return 0;
+	// }
+	// int firstVisiblePosition = localListView.getFirstVisiblePosition();
+	// int top = c.getTop();
+	// // return -top + firstVisiblePosition * c.getHeight();
+	// return -top + firstVisiblePosition;
+	// }
 
 	public void Refresh() {
 		Constant.sumTotal = new sql_SaleRecord().sumTotal(Constant.table_id);
 
-	    //discount.setText("1.00");
-		
+		// discount.setText("1.00");
+
 		taxEdit.setText("0.025");
 
 		subTotal.setText(decimalFormat.format(Constant.sumTotal)); // 所有菜单总价
@@ -575,15 +769,15 @@ public class OrdersAcitvity extends BaseActivity implements
 							.toString()
 							.substring(0,
 									taxEdit.getText().toString().length() - 1)) / 100));
-			tax = a
-					* ((Float.parseFloat(taxEdit
-							.getText()
-							.toString()
-							.substring(0,
-									taxEdit.getText().toString().length() - 1)) / 100));
+			// tax = a
+			// * ((Float.parseFloat(taxEdit
+			// .getText()
+			// .toString()
+			// .substring(0,
+			// taxEdit.getText().toString().length() - 1)) / 100));
 		} else {
 			b = a + a * Float.valueOf(taxEdit.getText().toString());
-			tax = a * Float.valueOf(taxEdit.getText().toString());
+			// tax = a * Float.valueOf(taxEdit.getText().toString());
 		}
 
 		total.setText(decimalFormat.format(b));
@@ -608,11 +802,12 @@ public class OrdersAcitvity extends BaseActivity implements
 		lin.removeAllViews();
 		bill_layout = ((LinearLayout) findViewById(R.id.ll_bill));
 		bill_layout.removeAllViews();
+		contact_name = (TextView) findViewById(R.id.customer_name);
 		discount_btn = (Button) findViewById(R.id.discount_btn);
 		add_btn = (Button) findViewById(R.id.main_btn);
 		custom_name = (TextView) findViewById(R.id.customer_name);
-		schedule=(Button) findViewById(R.id.schedule_btn);
-		table_priority=(RadioButton) findViewById(R.id.priority);
+		schedule = (Button) findViewById(R.id.schedule_btn);
+		table_priority = (RadioButton) findViewById(R.id.priority);
 		switch (currentPage) {
 		case 1:// menu
 			lin.addView(guloop_menu);
@@ -651,15 +846,16 @@ public class OrdersAcitvity extends BaseActivity implements
 
 		menu = this.getLayoutInflater().inflate(R.layout.layout_menu, null);
 
-		popup = new PopupWindow(menu, 200, 760);
+		// popup = new PopupWindow(menu, 200, 760);
 
-		drops = (RelativeLayout) settings.findViewById(R.id.drops);
-		pay_out = (RelativeLayout) settings.findViewById(R.id.pay_out);
-		personal_report = (RelativeLayout) settings
-				.findViewById(R.id.personal_report);
-		purchase = (RelativeLayout) settings.findViewById(R.id.purchase);
-		close_shift = (RelativeLayout) settings.findViewById(R.id.close_shift);
-		menu_setting = (LinearLayout) menu.findViewById(R.id.menu_setting);
+		// drops = (RelativeLayout) settings.findViewById(R.id.drops);
+		// pay_out = (RelativeLayout) settings.findViewById(R.id.pay_out);
+		// personal_report = (RelativeLayout) settings
+		// .findViewById(R.id.personal_report);
+		// purchase = (RelativeLayout) settings.findViewById(R.id.purchase);
+		// close_shift = (RelativeLayout)
+		// settings.findViewById(R.id.close_shift);
+		// menu_setting = (LinearLayout) menu.findViewById(R.id.menu_setting);
 		menu_liquors = (LinearLayout) menu.findViewById(R.id.menu_liquors);
 		menu_dilivery = (LinearLayout) menu.findViewById(R.id.menu_dilivery);
 		menu_regular_tables = (LinearLayout) menu
@@ -667,7 +863,7 @@ public class OrdersAcitvity extends BaseActivity implements
 		goback = (ImageView) findViewById(R.id.goback);
 		menu_sushi_bar = (LinearLayout) menu.findViewById(R.id.menu_sushi_bar);
 		menu_take_out = (LinearLayout) menu.findViewById(R.id.menu_take_out);
-		
+
 		if (Constant.Area.equals("Tables"))
 			menu_regular_tables.setBackgroundColor(Color.parseColor("#A25349"));
 		else if (Constant.Area.equals("Liquor Bar"))
@@ -678,7 +874,6 @@ public class OrdersAcitvity extends BaseActivity implements
 			menu_take_out.setBackgroundColor(Color.parseColor("#A25349"));
 		else if (Constant.Area.equals("Delivery"))
 			menu_dilivery.setBackgroundColor(Color.parseColor("#A25349"));
-		
 
 	}
 
@@ -696,7 +891,7 @@ public class OrdersAcitvity extends BaseActivity implements
 		taxEdit.setOnClickListener(this);
 		schedule.setOnClickListener(this);
 		table_priority.setOnClickListener(this);
-		menu_setting.setOnClickListener(this);
+		// menu_setting.setOnClickListener(this);
 
 		menu_liquors.setOnClickListener(this);
 		menu_dilivery.setOnClickListener(this);
@@ -704,26 +899,25 @@ public class OrdersAcitvity extends BaseActivity implements
 		menu_sushi_bar.setOnClickListener(this);
 		menu_take_out.setOnClickListener(this);
 
-		drops.setOnClickListener(this);
-		pay_out.setOnClickListener(this);
-		personal_report.setOnClickListener(this);
-		purchase.setOnClickListener(this);
-		close_shift.setOnClickListener(this);
+		// drops.setOnClickListener(this);
+		// pay_out.setOnClickListener(this);
+		// personal_report.setOnClickListener(this);
+		// purchase.setOnClickListener(this);
+		// close_shift.setOnClickListener(this);
 		add_btn.setOnClickListener(this);
 		discount_btn.setOnClickListener(this);
 		goback.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
 				OrdersAcitvity.this.finish();
+				openDesk();
 			}
 		});
 		findViewById(R.id.setContact).setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
 				currentPage = 2;
 				initViews();
 				initContactViews();
@@ -733,8 +927,87 @@ public class OrdersAcitvity extends BaseActivity implements
 		});
 	}
 
+	private void createSales(final String currentTime, final String itemNo) {
+
+		putAsyncTask(new AsyncTask<Void, Void, Boolean>() {
+
+			@Override
+			protected void onPreExecute() {
+				super.onPreExecute();
+				showLoadingDialog("Just a moment, please...");
+			}
+
+			@Override
+			protected Boolean doInBackground(Void... arg0) {
+				List<d_Sale> sales = new ArrayList<d_Sale>();
+
+				d_Sale sale = new d_Sale(itemNo, "", currentTime,
+						Constant.table_id, "", "", "", Constant.Area, "", 0.0f,
+						0.0f, 0.0f, 0.0f, 1.0f, 0.025f,
+						Constant.currentStaff.getS_account(), 0.0f, 0.0f, 0);
+				Log.i("tag", "当前销售纪录的id new=" + itemNo);
+				sales.add(sale);
+				return (new JsonResolveUtils(OrdersAcitvity.this))
+						.sendSaleRecords(sales);
+			}
+
+			@Override
+			protected void onPostExecute(Boolean result) {
+				super.onPostExecute(result);
+				dismissLoadingDialog();
+				if (result) {
+					Log.i("tag", Constant.Area);
+					// (new
+					// sql_Sales()).insertSalerecord(itemNo,Constant.table_id,currentTime,Constant.currentStaff.getS_account(),Constant.Area);
+					Log.i("tag", "创建新的销售纪录成功。。");
+				}
+			}
+		});
+	}
+
+	private void setPriority() {
+		putAsyncTask(new AsyncTask<Void, Void, Boolean>() {
+			String itemNo;
+
+			@Override
+			protected void onPreExecute() {
+				super.onPreExecute();
+				showLoadingDialog("Just a moment, please...");
+			}
+
+			@Override
+			protected Boolean doInBackground(Void... arg0) {
+				itemNo = (new sql_SaleRecord()).getDeskId(Constant.table_id);
+				Log.i("tag", "当前销售纪录的id=" + itemNo);
+				if (itemNo.equals(""))
+					return false;
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				return new JsonResolveUtils(OrdersAcitvity.this).setPriority(
+						itemNo, 1);
+			}
+
+			@Override
+			protected void onPostExecute(Boolean result) {
+				super.onPostExecute(result);
+				dismissLoadingDialog();
+				if (result) {
+					(new sql_Saleandpdt()).setSalesPriority(itemNo, 1);
+					showCustomToast("operation is success!");
+				} else {
+					showCustomToast("operation is fail!");
+				}
+
+			}
+		});
+	}
+
 	private void send() {
 		putAsyncTask(new AsyncTask<Void, Void, Boolean>() {
+			String itemNo; // 当前销售纪录的id
 
 			/*
 			 * onPreExecute()这里是最终用户调用execute时的接口， 当任务执行之前开始调用此方法，可以在这里显示进度对话框。
@@ -744,9 +1017,9 @@ public class OrdersAcitvity extends BaseActivity implements
 			@Override
 			protected void onPreExecute() {
 				super.onPreExecute();
-				
+
 				showLoadingDialog("Just a moment, please...");
-				
+
 			}
 
 			/*
@@ -758,26 +1031,36 @@ public class OrdersAcitvity extends BaseActivity implements
 			 */
 			@Override
 			protected Boolean doInBackground(Void... params) {
-				List<d_SaleRecord> sales = (new sql_SaleRecord())
-						.recordlist(Constant.table_id);
+
+				itemNo = (new sql_SaleRecord()).getDeskId(Constant.table_id);
+				Log.i("tag", "当前销售纪录的id=" + itemNo);
+				List<d_Saleandpdt> sales = (new sql_Saleandpdt())
+						.getDeskSalesNotSent(itemNo);
+
 				if (sales.size() < 1)
 					return false;
 				try {
-					//if(table_priority.isChecked()){
-					//	for(int i=0;i<sales.size();i++){
-							//sales.get(i).setOtherSpecNo1("true");
-							
-				     //	}
-						
-              //     }
-						if(Constant.schedule.equals(""))
-							Constant.schedule=DateUtils.getDateEN();
-						for(int i=0;i<sales.size();i++){
-							sales.get(i).setCreateTime(Constant.schedule);
+					if (table_priority.isChecked()) {
+						for (int i = 0; i < sales.size(); i++) {
+							sales.get(i).setPriority(1);
 						}
+					}
+					// if(Constant.schedule.equals(""))
+					// Constant.schedule=DateUtils.getDateEN();
+					for (int i = 0; i < sales.size(); i++) {
+						if (!Constant.schedule.equals(""))
+							sales.get(i).setCreateTime(Constant.schedule);
+						sales.get(i).setStatus("Sent");
+					}
 					Thread.sleep(1000);
+					List<d_Sale> salerecords = (new sql_Sales())
+							.getSales(itemNo);
+					Thread.sleep(500);
+					(new JsonResolveUtils(OrdersAcitvity.this))
+							.sendSaleRecords(salerecords);
+					Thread.sleep(500);
 					return new JsonResolveUtils(OrdersAcitvity.this)
-							.sendSaleRecords(sales);
+							.sendSaleandpdt(sales);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -797,16 +1080,15 @@ public class OrdersAcitvity extends BaseActivity implements
 				if (!result) {
 					showCustomToast("Abnormal operation is prohibited!");
 				} else {
-					new sql_SaleRecord().update_send(Constant.table_id, "Sent");
+					new sql_SaleRecord().update_send(Constant.table_id, itemNo,
+							"Sent");
 					showCustomToast("Successed to place an order !");
 					try {
 						Thread.sleep(500);
 						finish();
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-
 				}
 			}
 		});
@@ -838,7 +1120,6 @@ public class OrdersAcitvity extends BaseActivity implements
 			map.put("card_Lname", contact.getCard_Lname());
 			map.put("be_Notes", contact.getBe_Notes());
 			map.put("not_Notes", contact.getNot_Notes());
-
 			dataList1.add(map);
 		}
 
@@ -877,6 +1158,7 @@ public class OrdersAcitvity extends BaseActivity implements
 			public void onItemClick(AdapterView<?> adapter, View v,
 					int position, long id) {
 				contact_create.setText("Save Changes");
+				@SuppressWarnings("unchecked")
 				Map<String, Object> map = (Map<String, Object>) adapter
 						.getItemAtPosition(position);
 
@@ -972,6 +1254,7 @@ public class OrdersAcitvity extends BaseActivity implements
 			public void onItemClick(AdapterView<?> adapter, View v,
 					int position, long id) {
 				contact_create.setText("Save Changes");
+				@SuppressWarnings("unchecked")
 				Map<String, Object> map = (Map<String, Object>) adapter
 						.getItemAtPosition(position);
 
@@ -1001,6 +1284,12 @@ public class OrdersAcitvity extends BaseActivity implements
 				String name = customer_name.getText().toString();
 				((TextView) findViewById(R.id.customer_name)).setText(name);
 				String phone = customer_phone.getText().toString();
+				String street = add_street.getText().toString();
+				String apt = add_apt.getText().toString();
+				String city = add_city.getText().toString();
+				// String state = add_state.getText().toString();
+				String code = add_code.getText().toString();
+				String number = add_number.getText().toString();
 				d_Contact contact = new d_Contact(name, phone, add_number
 						.getText().toString(), add_street.getText().toString(),
 						add_apt.getText().toString(), add_city.getText()
@@ -1017,6 +1306,19 @@ public class OrdersAcitvity extends BaseActivity implements
 					if (name.equals("") || phone.equals("")) {
 						customer_name.setFocusable(true);
 					} else {
+						Cursor mCursor = (new sql_SaleRecord())
+								.recordlist3("select status from SaleRecord where itemNo='"
+										+ md5 + "'");
+						mCursor.moveToFirst();
+						if (mCursor.getString(0).equals("Delivery")) {
+							if ("".equals(number) || "".equals(street)
+									|| "".equals(city) || "".equals(code)
+									|| "".equals(apt) || "".equals(name)) {
+								showCustomToast("Address information must be detailed");
+								return;
+							}
+							mCursor.close();
+						}
 						addContact(contact);
 					}
 				} else {
@@ -1026,13 +1328,7 @@ public class OrdersAcitvity extends BaseActivity implements
 		});
 	}
 
-	protected void updateContact(d_Contact contact) {
-		currentPage = 1;
-		initViews();
-		initViews_MenuType();
-	}
-
-	private void addContact(final d_Contact contact) {
+	protected void updateContact(final d_Contact contact) {
 		putAsyncTask(new AsyncTask<Void, Void, Boolean>() {
 			@Override
 			protected void onPreExecute() {
@@ -1043,7 +1339,7 @@ public class OrdersAcitvity extends BaseActivity implements
 			@Override
 			protected Boolean doInBackground(Void... params) {
 				try {
-					new sql_Contact().save(contact);
+
 					return new JsonResolveUtils(OrdersAcitvity.this)
 							.addContact(contact);
 				} catch (Exception e) {
@@ -1060,6 +1356,22 @@ public class OrdersAcitvity extends BaseActivity implements
 					showCustomToast("save failed !");
 				} else {
 					showCustomToast("save success !");
+					contact_name.setText(contact.getName());
+					new sql_Contact().save(contact);
+					Cursor mcursor = (new sql_SaleRecord())
+							.recordlist3("select id from Contact where Name='"
+									+ contact.getName() + "' and Phone='"
+									+ contact.getPhone() + "'");
+					String preItem = (new sql_SaleRecord())
+							.getDeskId(Constant.table_id);
+
+					if (mcursor.moveToFirst()) {
+						(new sql_SaleRecord())
+								.recordlist5("update SaleRecord set customerId="
+										+ mcursor.getInt(0)
+										+ " where itemNo='"
+										+ preItem + "'");
+					}
 					currentPage = 1;
 					initViews();
 					initViews_MenuType();
@@ -1068,17 +1380,92 @@ public class OrdersAcitvity extends BaseActivity implements
 		});
 	}
 
-	private int cnt = 0;
+	private void addContact(final d_Contact contact) {
+		putAsyncTask(new AsyncTask<Void, Void, Boolean>() {
+			@Override
+			protected void onPreExecute() {
+				super.onPreExecute();
+				showLoadingDialog("Just a moment, please...");
+			}
+
+			@Override
+			protected Boolean doInBackground(Void... params) {
+				try {
+
+					return new JsonResolveUtils(OrdersAcitvity.this)
+							.addContact(contact);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				return false;
+			}
+
+			@Override
+			protected void onPostExecute(Boolean result) {
+				super.onPostExecute(result);
+				dismissLoadingDialog();
+				if (!result) {
+					showCustomToast("save failed !");
+				} else {
+					showCustomToast("save success !");
+					contact_name.setText(contact.getName());
+					new sql_Contact().save(contact);
+					Cursor mcursor = (new sql_SaleRecord())
+							.recordlist3("select id from Contact where Name='"
+									+ contact.getName() + "' and Phone='"
+									+ contact.getPhone() + "'");
+					String preItem = (new sql_SaleRecord())
+							.getDeskId(Constant.table_id);
+
+					if (mcursor.moveToFirst()) {
+						(new sql_SaleRecord())
+								.recordlist5("update SaleRecord set customerId="
+										+ mcursor.getInt(0)
+										+ " where itemNo='"
+										+ preItem + "'");
+					}
+					currentPage = 1;
+					initViews();
+					initViews_MenuType();
+				}
+			}
+		});
+	}
+
+	// private int moveAmount = 0;
+	// private boolean flag = false;
+	// boolean lastItem = false;
+	// int pos = 0;
+	// int lastItemPos = 0;
 
 	private void AddmenuList() {
-		final MenuBillAdapter1 menuAdapter;
-		final LayoutInflater inflater = (LayoutInflater) this
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		final View tview = inflater.inflate(R.layout.bill, null);
+		final MenuBillAdapter1<d_SaleRecord> menuAdapter;
+		// final LayoutInflater inflater = (LayoutInflater) this
+		// .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+		final View tview = View.inflate(this, R.layout.bill, null);
+
+		final String billId = UUID.randomUUID().toString().subSequence(0, 8)
+				.toString();
+
 		views.add(tview);
 
 		TextView tv_title = (TextView) tview.findViewById(R.id.bill_text);
-		tv_title.setText("BILL" + cnt);
+
+		// if (!flag) {
+		// // tv_title.setText("BILL" + currentBill);
+		// tv_title.setText("BILL" + currentBill++);
+		// } else {
+		// if (!lastItem) {
+		// tv_title.setText("BILL" + (currentBill+1));
+		// } else {
+		// tv_title.setText("BILL" + (currentBill + 1-billDelete));
+		// }
+		// lastItem = false;
+		// // tv_title.setText("BILL" + (currentBill + 1));
+		// flag = false;
+		// }
+		tv_title.setText("BILL");
 
 		saleList = (new sql_SaleRecord()).getAllSalerecord(Constant.table_id);
 
@@ -1089,46 +1476,64 @@ public class OrdersAcitvity extends BaseActivity implements
 		final d_Customer dCus = new d_Customer();
 		final sql_Customer sCustomer = new sql_Customer();
 
+		Log.i("saleListSize", saleList.size() + "");
+
 		for (int i = 0; i < saleList.size(); i++) {
-			(new sql_SaleRecord()).update_customerNo(saleList.get(i)
-					.getItemNo() + "", true);
-			dCus.setCustomNo(cnt);
-			dCus.setItemNo(saleList.get(i).getItemNo());
+			(new sql_SaleRecord()).update_customerNo(saleList.get(i).getId(),
+					true);
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			dCus.setCustomNo(billId);
+			dCus.setItemNo(saleList.get(i).getId());
 			sCustomer.save(dCus);
 		}
-
-		tview.setId(cnt);
-
+		saleList = (new sql_SaleRecord()).getAllSalerecord(Constant.table_id);
+		tview.setId(currentBill);
+		tview.setTag(billId);
 		final ListView listView0 = (ListView) tview
 				.findViewById(R.id.menu_list1);
 
 		menuAdapter = new MenuBillAdapter1<d_SaleRecord>(this, saleList,
-				R.layout.payout_item, cnt);
+				R.layout.payout_item, views.size());
+
 		adapters.add(menuAdapter);
-        
+
+		Log.i("adapters", adapters.size() + "");
+
 		listView0.setAdapter(menuAdapter);
-		listView0.setTag(cnt);
+		listView0.setSelection(foodVisibleItem);
+		listView0.scrollBy(0, getScrollY());
+
+		listViews_bill.add(listView0);
+		listViews_billAndFood.add(listView0);
+
+		listView0.setTag(billId);
 		listView0.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				int tag = Integer.parseInt(listView0.getTag().toString());
+				String tag = listView0.getTag().toString();
 				LinearLayout ll = (LinearLayout) view.findViewById(R.id.m_ll1);
 				if (((TextView) view.findViewById(R.id.tv_qty1))
 						.getTextColors() == ColorStateList.valueOf(Color.BLACK)) {
 					record[position] = 0;
 
 					dCus.setCustomNo(tag);
-					dCus.setItemNo(saleList.get(position).getItemNo());
+					dCus.setItemNo(saleList.get(position).getId());
 					sCustomer.delete(dCus);
 
 					(new sql_SaleRecord()).update_customerNo(
-							saleList.get(position).getItemNo() + "", false);
+							saleList.get(position).getId(), false);
 
-					delete(cnt + "", saleList.get(position).getPdtCODE());
-
+					// delete(currentBill + "",
+					// saleList.get(position).getPdtCODE());
+					delete(tag, saleList.get(position).getId());
 					ll.setBackgroundResource(R.drawable.grey_bg);
+
 					((TextView) view.findViewById(R.id.tv_qty1))
 							.setTextColor(Color.parseColor("#DEE2D5"));
 					((TextView) view.findViewById(R.id.tv_price1))
@@ -1136,63 +1541,99 @@ public class OrdersAcitvity extends BaseActivity implements
 				} else {
 					record[position] = 1;
 					dCus.setCustomNo(tag);
-					dCus.setItemNo(saleList.get(position).getItemNo());
+					dCus.setItemNo(saleList.get(position).getId());
 					sCustomer.save(dCus);
 
 					(new sql_SaleRecord()).update_customerNo(
-							saleList.get(position).getItemNo() + "", true);
+							saleList.get(position).getId(), true);
 
 					ll.setBackgroundResource(R.drawable.orange_bg);
+
 					((TextView) view.findViewById(R.id.tv_qty1))
 							.setTextColor(Color.BLACK);
 					((TextView) view.findViewById(R.id.tv_price1))
 							.setTextColor(Color.BLACK);
 				}
+				menuAdapter.notifyDataSetChanged();
 				RefreshAllBill();
 			}
-
 		});
 		bill_layout.addView(tview);
 
-		tview.findViewById(R.id.bt_delete_item).setTag(cnt);
+		tview.findViewById(R.id.bt_delete_item).setTag(currentBill);
 		tview.findViewById(R.id.bt_delete_item).setOnClickListener(
 				new OnClickListener() {
-
 					@Override
 					public void onClick(View arg0) {
 						String position = arg0.getTag().toString();
-						if (!position.equals("0")) {// 不是第一个bill
-							bill_layout.removeView(tview);
-
+						if (!position.equals("0") && (printer_counter == 0)
+								&& (pay_counter == 0)) {// 不是第一个bill
+							String mBillId = "";
+							for (int x = 0; x < views.size(); x++) {
+								if (views.get(x)
+										.findViewById(R.id.bt_delete_item)
+										.getTag().toString().equals(position)) {
+									mBillId = views.get(x).getTag().toString();
+								}
+								bill_layout.removeView(tview);
+							}
 							List<Integer> items = new sql_Customer()
-									.getItemsId(position);
-							for (int i = 0; i < items.size(); i++)
+									.getItemsId(mBillId);
+							for (int i = 0; i < items.size(); i++) {
 								(new sql_SaleRecord()).update_customerNo(
-										items.get(i) + "", false);
-							new sql_Customer().deleteCustomer(Integer
-									.parseInt(position));
-							RefreshAllBill();
+										items.get(i), false);
+								try {
+									Thread.sleep(50);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+							}
+							Log.i("mBillId", mBillId);
+							new sql_Customer().deleteCustomer(mBillId);
 							views.remove(tview);
+
+							// Log.i("post", Integer.parseInt(position) + "");
+							if (adapters.size() > Integer.parseInt(position)) {
+								adapters.remove(Integer.parseInt(position));
+							}
+							// menuAdapter.notifyDataSetChanged();
+							currentBill--;
+							RefreshAllBill();
+							// billDelete++;
+							// flag = true;
 						}
 					}
 				});
-		tview.findViewById(R.id.printer_bill).setTag(cnt);
+		// 为每个打印按钮设置当前所属的账单的id
+		tview.findViewById(R.id.printer_bill).setTag(currentBill);
+		// 打印按钮的事件监听
 		tview.findViewById(R.id.printer_bill).setOnClickListener(
 				new OnClickListener() {
 
 					@Override
 					public void onClick(View arg0) {
+						String position = arg0.getTag().toString();
 						arg0.setClickable(false);
 						arg0.setBackgroundResource(R.drawable.printbtn_bg2);
 						listView0.setClickable(false);
+
+						for (int x = 0; x < views.size(); x++) {
+							if (views.get(x).findViewById(R.id.printer_bill)
+									.getTag().toString().equals(position)) {
+								currentPrintPage = x;
+								views.get(x).findViewById(R.id.printer_bill)
+										.setEnabled(false);
+							}
+						}
+
 						++printer_counter;
 						startActivityForResult(new Intent(OrdersAcitvity.this,
 								BluetoothListActivity.class), 1);
-						if (printer_counter == views.size()) {
-							clear_table
-									.setBackgroundResource(R.drawable.close2);
-							clear_table.setEnabled(true);
-						}
+						// if (printer_counter == views.size()) {
+						// clear_table
+						// .setBackgroundResource(R.drawable.close2);
+						// clear_table.setEnabled(true);
+						// }
 					}
 				});
 		final EditText tipAmount = (EditText) tview
@@ -1201,8 +1642,7 @@ public class OrdersAcitvity extends BaseActivity implements
 				.findViewById(R.id.PaidAmount);
 		final TextView tv_money = (TextView) tview
 				.findViewById(R.id.bill_money1);
-		final Button pay_method=(Button) tview
-				.findViewById(R.id.tt1);
+		final Button pay_method = (Button) tview.findViewById(R.id.tt1);
 
 		tipAmount.setOnClickListener(new OnClickListener() {
 
@@ -1210,7 +1650,6 @@ public class OrdersAcitvity extends BaseActivity implements
 			public void onClick(View arg0) {
 				new pop_Input(OrdersAcitvity.this, tipAmount, PaidAmount,
 						tv_money, 1);
-
 			}
 		});
 		PaidAmount.setOnClickListener(new OnClickListener() {
@@ -1221,36 +1660,97 @@ public class OrdersAcitvity extends BaseActivity implements
 						tv_money, 2);
 			}
 		});
-		pay_method.setOnClickListener(new OnClickListener(){
+		pay_method.setTag(currentBill);
+		pay_method.setOnClickListener(new OnClickListener() {
 			@Override
-			public void onClick(View v){
-				new pop_payment_method(OrdersAcitvity.this,pay_method);
+			public void onClick(View v) {
+				String position = v.getTag().toString();
+
+				String mBillId = "";
+				for (int x = 0; x < views.size(); x++) {
+					if (views.get(x).findViewById(R.id.tt1).getTag().toString()
+							.equals(position)) {
+						mBillId = views.get(x).getTag().toString();
+					}
+				}
+				++pay_counter;
+				if (pay_counter == views.size()) {
+					clear_table.setBackgroundResource(R.drawable.close2);
+					clear_table.setEnabled(true);
+				}
+				float money1 = (tv_money.getText().toString()).equals("") ? 0.0f
+						: Float.parseFloat(tv_money.getText().toString());
+				float tax1 = (taxEdit.getText().toString()).equals("") ? 0.0f
+						: Float.parseFloat(taxEdit.getText().toString());
+				float PaidAmount1 = (PaidAmount.getText().toString())
+						.equals("") ? money1 : Float.parseFloat(PaidAmount
+						.getText().toString());
+
+				float tipAmount1 = (tipAmount.getText().toString()).equals("") ? 0.0f
+						: Float.parseFloat(tipAmount.getText().toString());
+				float discount1 = (discount.getText().toString()).equals("") ? 0.0f
+						: Float.parseFloat(discount.getText().toString());
+				float inittotal = (float) money1 / (1 + tax1) / discount1;
+				float taxTotal = money1/(1+tax1)*tax1;
+				d_Bill bill = new d_Bill(mBillId, md5, Constant.currentStaff
+						.getS_name(), money1, taxTotal, PaidAmount1, DateUtils
+						.getDateEN(), 0.0f, tipAmount1, discount1, inittotal,
+						"", "", "", Constant.Area);
+
+				new pop_payment_method(OrdersAcitvity.this, pay_method, bill);
 			}
 		});
-		cnt++;
+		currentBill++;
 		RefreshAllBill();
+	}
+
+	/*
+	 * 把分帐单的信息保存到后台
+	 */
+	public void saveBill(final String billId) {
+		putAsyncTask(new AsyncTask<Void, Void, Boolean>() {
+			@Override
+			protected void onPreExecute() {
+				super.onPreExecute();
+			}
+
+			@Override
+			protected Boolean doInBackground(Void... params) {
+				d_Bill mBill = new d_Bill();
+				mBill = new sql_Bill().getBillDetial(billId);
+				return new JsonResolveUtils(OrdersAcitvity.this).setBill(mBill);
+			}
+
+			@Override
+			protected void onPostExecute(Boolean result) {
+				super.onPostExecute(result);
+				// dismissLoadingDialog();
+			}
+		});
 	}
 
 	public void RefreshAllBill() {
 		sql_Customer sqlCustomer = new sql_Customer();
 		List<d_SaleRecord> sales;
 		float tTip = 0, paid = 0;
+		// Log.i("viewsSize", views.size() + "");
+
 		for (int j = 0; j < views.size(); j++) {
 			sales = (new sql_SaleRecord()).getAllSalerecord(Constant.table_id);
 			adapters.get(j).mDatas = sales;
-			adapters.get(j).notifyDataSetChanged();
-
 			float money = 0;
-            
 			for (int i = 0; i < sales.size(); i++) {
-				if (sqlCustomer.vertiy(j, sales.get(i).getItemNo()))
+				if (sqlCustomer.vertiy(views.get(j).getTag().toString(), sales
+						.get(i).getId())) {
 					money += sales.get(i).getNumber() * sales.get(i).getPrice()
-							/ sales.get(i).getCustomerNo();
-
+							/ sales.get(i).getContactNumber();
+				}
 			}
-			
-			money=(money*Float.valueOf(discount.getText().toString().trim()))
-					*(1+Float.valueOf(taxEdit.getText().toString()));
+			money = (money * Float
+					.valueOf(discount.getText().toString().trim()))
+					* (1 + Float.valueOf(taxEdit.getText().toString()));
+			Log.i("money", money + "");
+
 			((TextView) views.get(j).findViewById(R.id.bill_money1))
 					.setText(decimalFormat.format(money));
 
@@ -1262,24 +1762,26 @@ public class OrdersAcitvity extends BaseActivity implements
 				tTip += Float.parseFloat(tipAmount.getText().toString());
 			if (!PaidAmount.getText().toString().equals(""))
 				paid += Float.parseFloat(PaidAmount.getText().toString());
+
+			Log.i("adapters_re ", "adapters.get(" + j + ")");
+			adapters.get(j).notifyDataSetChanged();
 		}
+
 		((TextView) findViewById(R.id.total_paid_amount)).setText(decimalFormat
 				.format(paid));
 		((TextView) findViewById(R.id.total_tip)).setText(decimalFormat
 				.format(tTip));
-
 	}
 
-	private void delete(String customNo, String ItemNo) {
+	private void delete(String customNo, int ItemNo) {
 		new sql_SaleRecord()
-				.recordlist5("delete  from Customer  where  ItemNo='" + ItemNo
-						+ "' and customNo='" + customNo + "'");
+				.recordlist5("delete  from Customer  where  ItemNo=" + ItemNo
+						+ " and customNo='" + customNo + "'");
 	}
 
-	// ///////////////////打印////////////////////
+	// ///////////////////打印分帐单////////////////////
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
 		switch (resultCode) { // resultCode为回传的标记，我在B中回传的是RESULT_OK
 		case RESULT_OK:
@@ -1361,50 +1863,82 @@ public class OrdersAcitvity extends BaseActivity implements
 		// 打印正文
 		byte[] byteB = new byte[] { 0x1D, 0x21, (byte) 0x0000 };
 		mService.write(byteB);
-		for (int j = 0; j < views.size(); j++) {
+		// for (int j = 0; j < views.size(); j++) {
 
-			Cursor m_CallCursor;
-			m_CallCursor = new sql_SaleRecord()
-					.recordlist3("select s2.pdtName,s2.price,s2.number,s.itemNo,c.customNo from SaleRecord as s join Customer as c on s.itemNo=c.ItemNo " +
-							"SaleRecord as s join saleandpdt as s2 on s.itemNo=s2.salerecordId " +
-							"where s.deskName = '"
-							+ Constant.table_id
-							+ "' and s2.status1!='Finish' and c.customNo='"
-							+ views.get(j).getId() + "'");
-			sendMessage("\n\n");
-			sendMessage("--------------Bill" + j + "-----------\n");
+		Cursor m_CallCursor;
+		m_CallCursor = new sql_SaleRecord()
+				.recordlist3("select s3.tax,s.pdtName,s.price,s.number,s.contactNumber,c.customNo from saleandpdt as s join Customer as c on s.id=c.ItemNo "
+						+ "join SaleRecord as s3  on s3.itemNo=s.salerecordId "
+						+ " where s.status1!='Finish' and c.customNo='"
+						+ views.get(currentPrintPage).getTag().toString() + "'");
+		// .recordlist3("select * from Bill where BillId='"+"BILL"+views.get(j).getId()+"'");
+		sendMessage("\n\n");
+		sendMessage("--------------Bill" + currentPrintPage + "-----------\n");
+		float total = 0.0f;
+		while (m_CallCursor.moveToNext()) {
+			mService.write(byteB);
 
-			while (m_CallCursor.moveToNext()) {
-				mService.write(byteB);
-
-				if (m_CallCursor.getString(
-						m_CallCursor.getColumnIndex("pdtName")).length() > 12) {
-					sendMessage(lpad(
-							m_CallCursor.getString(
-									m_CallCursor.getColumnIndex("pdtName"))
-									.substring(0, 12), 17));
-				} else if (m_CallCursor.getString(
-						m_CallCursor.getColumnIndex("pdtName")).length() <= 12) {
-					sendMessage(lpad(m_CallCursor.getString(m_CallCursor
-							.getColumnIndex("pdtName")), 17));
-				}
-
-				mService.write(byteB);
+			if (m_CallCursor.getString(m_CallCursor.getColumnIndex("pdtName"))
+					.length() > 12) {
+				sendMessage(lpad(
+						m_CallCursor.getString(
+								m_CallCursor.getColumnIndex("pdtName"))
+								.substring(0, 12), 17));
+			} else if (m_CallCursor.getString(
+					m_CallCursor.getColumnIndex("pdtName")).length() <= 12) {
 				sendMessage(lpad(m_CallCursor.getString(m_CallCursor
-						.getColumnIndex("price")), 9));
-				mService.write(byteB);
-				sendMessage(m_CallCursor.getString(m_CallCursor
-						.getColumnIndex("number")) + "\n");
-				mService.write(byteC);
-
+						.getColumnIndex("pdtName")), 17));
 			}
-			m_CallCursor.close();
+
+			mService.write(byteB);
+			sendMessage(lpad(m_CallCursor.getString(m_CallCursor
+					.getColumnIndex("price")), 9));
+			mService.write(byteB);
+			sendMessage(m_CallCursor.getString(m_CallCursor
+					.getColumnIndex("number"))
+					+ "/"
+					+ m_CallCursor.getInt(m_CallCursor
+							.getColumnIndex("contactNumber")) + "\n");
+			total += (Float.parseFloat(m_CallCursor.getString(m_CallCursor
+					.getColumnIndex("price"))))
+					* (float) (m_CallCursor.getInt(m_CallCursor
+							.getColumnIndex("number")))
+					/ (m_CallCursor.getInt(m_CallCursor
+							.getColumnIndex("contactNumber")));
+
+			// sendMessage(lpad(m_CallCursor.getString(m_CallCursor
+			// .getColumnIndex("price")), 9));
+			// mService.write(byteB);
+			// mService.write(byteC);
+
 		}
+		m_CallCursor.moveToFirst();
+		mService.write(byteB);
+		sendMessage("-------------------------------\n");
+		mService.write(byteB);
+		sendMessage("Total:           " + lpad(total + "", 9) + "\n");
+		mService.write(byteB);
+		sendMessage("Tax:             "
+				+ lpad(m_CallCursor.getString(m_CallCursor
+						.getColumnIndex("tax")), 9) + "\n");
+		// sendMessage("-----payment---------------------\n");
+		// mService.write(byteB);
+		// sendMessage(lpad(m_CallCursor.getString(m_CallCursor
+		// .getColumnIndex("payment")), 9));
+		// sendMessage("-----tip-------------------------\n");
+		// mService.write(byteB);
+		// sendMessage(m_CallCursor.getString(m_CallCursor
+		// .getColumnIndex("tip")) + "\n");
+		// mService.write(byteC);
+		mService.write(byteC);
+		m_CallCursor.close();
+		// }
 
 		mService.write(byteB);
 		openBox();
 		// finish();
-		deskManager.setDeliveryDeskState(Constant.table_id);
+		// deskManager.setDeliveryDeskState(Constant.table_id);
+
 	}
 
 	/**
@@ -1537,13 +2071,42 @@ public class OrdersAcitvity extends BaseActivity implements
 					@Override
 					public void onClick(DialogInterface dialog, int arg1) {
 						// saveBill();
+						dialog.dismiss();
+						showLoadingDialog("Just a moment, please...");
+						Cursor mCursor = (new sql_SaleRecord())
+								.recordlist3("select BillId from Bill where saleRecordId='"
+										+ md5 + "'");
+						while (mCursor.moveToNext()) {
+							saveBill(mCursor.getString(0));// 把分帐单的信息保存到后台
+							try {
+								Thread.sleep(800);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							saveBillAndPdt(mCursor.getString(0));
+							try {
+								Thread.sleep(800);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+						try {
+							Thread.sleep(800);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						saveMoneyToSaleRecord();
+						try {
+							Thread.sleep(500);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 						if (Constant.table_id.length() > 20) {
 							deskManager
 									.cleanDeliveryDeskState(Constant.table_id);
 						} else {
 							clearTable();
 						}
-						dialog.dismiss();
 					}
 				}, "Cancel", new DialogInterface.OnClickListener() {
 
@@ -1557,6 +2120,111 @@ public class OrdersAcitvity extends BaseActivity implements
 	}
 
 	/*
+	 * 统计该桌的消费
+	 */
+	// 改成异步方法，向后台传送数据
+	public void saveMoneyToSaleRecord() {
+		final d_Sale sale = new d_Sale();
+		float subTotal = 0.0f;
+		float tipTotal = 0.0f;
+		float total = 0.0f;
+		float initTotal = 0.0f;
+		float cashTotal = 0.0f;
+		float cardTotal = 0.0f;
+		String itemNo = (new sql_SaleRecord()).getDeskId(Constant.table_id);
+		Cursor mCursor = (new sql_SaleRecord())
+				.recordlist3("select * from Bill where salerecordId='" + itemNo
+						+ "'");
+		while (mCursor.moveToNext()) {
+			subTotal += mCursor.getFloat(mCursor.getColumnIndex("subTotal"));
+			tipTotal += mCursor.getFloat(mCursor.getColumnIndex("tip"));
+			total += mCursor.getFloat(mCursor.getColumnIndex("total"));
+			initTotal += mCursor.getFloat(mCursor.getColumnIndex("initTotal"));
+			if (mCursor.getString(mCursor.getColumnIndex("payment")).equals(
+					"cash")) {
+				Log.i("tag",
+						"payment="
+								+ mCursor.getString(mCursor
+										.getColumnIndex("payment")));
+				cashTotal += mCursor.getFloat(mCursor.getColumnIndex("total"));
+			} else {
+				Log.i("tag",
+						"payment="
+								+ mCursor.getString(mCursor
+										.getColumnIndex("payment")));
+				cardTotal += mCursor.getFloat(mCursor.getColumnIndex("total"));
+			}
+		}
+		mCursor.close();
+		Cursor mCursor1 = (new sql_SaleRecord())
+				.recordlist3("select * from SaleRecord where itemNo='" + itemNo
+						+ "'");
+		if (mCursor1.moveToFirst()) {
+			sale.setItemNo(itemNo);
+			sale.setCloseTime(DateUtils.getDateEN());
+			sale.setCreateTime(mCursor1.getString(mCursor1
+					.getColumnIndex("createTime")));
+			sale.setDeskName(mCursor1.getString(mCursor1
+					.getColumnIndex("deskName")));
+			sale.setStatus(mCursor1.getString(mCursor1.getColumnIndex("status")));
+			sale.setDept(mCursor1.getString(mCursor1.getColumnIndex("dept")));
+			sale.setSubtotal(subTotal);
+			sale.setTiptotal(tipTotal);
+			sale.setTotal(total);
+			sale.setInitTotal(initTotal);
+			sale.setRebate(Float.parseFloat(mCursor1.getString(mCursor1
+					.getColumnIndex("rebate"))));
+			sale.setTax(Float.parseFloat(mCursor1.getString(mCursor1
+					.getColumnIndex("tax"))));
+			sale.setWaiter(mCursor1.getString(mCursor1.getColumnIndex("waiter")));
+			sale.setCashTotal(cashTotal);
+			sale.setCardTotal(cardTotal);
+			sale.setCustomerId(mCursor1.getInt(mCursor1
+					.getColumnIndex("customerId")));
+		}
+		mCursor1.close();
+		putAsyncTask(new AsyncTask<Void, Void, Boolean>() {
+
+			@Override
+			protected void onPreExecute() {
+				super.onPreExecute();
+				// showLoadingDialog("Just a moment, please...");
+			}
+
+			@Override
+			protected Boolean doInBackground(Void... params) {
+				try {
+					List<d_Sale> sales = new ArrayList<d_Sale>();
+					sales.add(sale);
+
+					boolean flag = new JsonResolveUtils(OrdersAcitvity.this)
+							.sendSaleRecords(sales);
+					Thread.sleep(1000);
+					return flag;
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					return false;
+				}
+			}
+
+			@Override
+			protected void onPostExecute(Boolean result) {
+				super.onPostExecute(result);
+				// dismissLoadingDialog();
+				// showCustomToast("save saleRecord succeed !");
+				(new sql_SaleRecord())
+						.recordlist5("update SaleRecord set subtotal="
+								+ sale.getSubtotal() + ",tiptotal="
+								+ sale.getTotal() + ",total=" + sale.getTotal()
+								+ ",initTotal=" + sale.getInitTotal()
+								+ ",cashTotal=" + sale.getCashTotal()
+								+ ",cardTotal=" + sale.getCardTotal()
+								+ " where itemNo='" + sale.getItemNo() + "'");
+			}
+		});
+	}
+
+	/*
 	 * 后台清桌
 	 */
 	private void clearTable() {
@@ -1564,7 +2232,6 @@ public class OrdersAcitvity extends BaseActivity implements
 			@Override
 			protected void onPreExecute() {
 				super.onPreExecute();
-				showLoadingDialog("Just a moment, please...");
 			}
 
 			@Override
@@ -1572,8 +2239,14 @@ public class OrdersAcitvity extends BaseActivity implements
 				try {
 					d_Desk desk = new d_Desk(0, "", "EMPTY", "EMPTY",
 							Constant.table_id, 0, "", 0, 0, 0, 0, 0);
+
 					sql_SaleRecord ss = new sql_SaleRecord();
 					ss.update("Finish", Constant.table_id);
+					for (int i = 0; i < saleList.size(); i++) {
+						new JsonResolveUtils(OrdersAcitvity.this)
+								.setSaleandpdtFinish(saleList.get(i));
+						Thread.sleep(1500);
+					}
 					// new
 					// JsonResolveUtils(context).sendSaleRecords(getSaleRecordsAll());
 					boolean flag = new JsonResolveUtils(OrdersAcitvity.this)
@@ -1600,7 +2273,6 @@ public class OrdersAcitvity extends BaseActivity implements
 				}
 			}
 		});
-
 	}
 
 	/*
@@ -1621,36 +2293,77 @@ public class OrdersAcitvity extends BaseActivity implements
 	// Params 启动任务执行的输入参数
 	// Progress 后台任务执行的进度
 	// Result 后台计算结果的类型
-	private class RefreshAsyncTask extends AsyncTask<Void, Void, Boolean> {
-
-		// onPreExecute()方法用于在执行异步任务前,主线程做一些准备工作
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			showLoadingDialog("Just a moment, please...");
-		}
-
-		@Override
-		protected Boolean doInBackground(Void... arg0) {
-			return new JsonResolveUtils(OrdersAcitvity.this).setBill(tBill);
-		}
-
-		@Override
-		protected void onPostExecute(Boolean result) {
-			super.onPostExecute(result);
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+	// private class RefreshAsyncTask extends AsyncTask<Void, Void, Boolean> {
+	//
+	// // onPreExecute()方法用于在执行异步任务前,主线程做一些准备工作
+	// @Override
+	// protected void onPreExecute() {
+	// super.onPreExecute();
+	// showLoadingDialog("Just a moment, please...");
+	// }
+	//
+	// @Override
+	// protected Boolean doInBackground(Void... arg0) {
+	// return new JsonResolveUtils(OrdersAcitvity.this).setBill(tBill);
+	// }
+	//
+	// @Override
+	// protected void onPostExecute(Boolean result) {
+	// super.onPostExecute(result);
+	// try {
+	// Thread.sleep(2000);
+	// } catch (InterruptedException e) {
+	// e.printStackTrace();
+	// }
+	//
+	// dismissLoadingDialog();
+	// if (!result) {
+	// showCustomToast("send Bill failed !");
+	// } else {
+	// showCustomToast("send Bill successed !");
+	// }
+	// }
+	//
+	// }
+	public void saveBillAndPdt(final String id) {
+		putAsyncTask(new AsyncTask<Void, Void, Boolean>() {
+			@Override
+			protected void onPreExecute() {
+				super.onPreExecute();
+				// showLoadingDialog("Just a moment, please...");
 			}
 
-			dismissLoadingDialog();
-			if (!result) {
-				showCustomToast("send Bill failed !");
-			} else {
-				showCustomToast("send Bill successed !");
-			}
-		}
+			// int ans=0;
+			@Override
+			protected Boolean doInBackground(Void... params) {
+				d_Customer customer = new d_Customer();
+				Cursor mCursor1 = (new sql_SaleRecord())
+						.recordlist3("select * from Customer where customNo='"
+								+ id + "'");
+				Log.i("tag", mCursor1.getCount() + "mCursor1");
+				while (mCursor1.moveToNext()) {
+					customer.setCustomNo(mCursor1.getString(mCursor1
+							.getColumnIndex("customNo")));
+					customer.setItemNo(mCursor1.getInt(mCursor1
+							.getColumnIndex("ItemNo")));
+					new JsonResolveUtils(OrdersAcitvity.this)
+							.setBillAndPdt(customer);
 
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+
+				}
+				return true;
+			}
+
+			@Override
+			protected void onPostExecute(Boolean result) {
+				super.onPostExecute(result);
+				// dismissLoadingDialog();
+			}
+		});
 	}
 }

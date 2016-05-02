@@ -1,12 +1,6 @@
 package com.utopia.activity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -15,13 +9,9 @@ import com.utopia.Base.BaseActivity;
 import com.utopia.Dao.sql_Bill;
 import com.utopia.Dao.sql_Cashier;
 import com.utopia.Dao.sql_SaleRecord;
-import com.utopia.Model.d_Bill;
-import com.utopia.Model.d_Cashier;
-import com.utopia.Service.HomeKeyLocker;
 import com.utopia.utils.Constant;
 import com.utopia.utils.DateUtils;
 import com.utopia.utils.ExitApplication;
-import com.utopia.utils.JsonResolveUtils;
 
 public class ShiftReportActivity extends BaseActivity implements
 		OnClickListener {
@@ -38,24 +28,23 @@ public class ShiftReportActivity extends BaseActivity implements
 	private TextView tv_cre3;
 	private TextView tv_pay1; // payout
 	private TextView tv_pur1; // purchase
-	private TextView tv_drops1; // drops 
-	private List<d_Bill> bills;
-	private List<d_Cashier> cashiers;
+	private TextView tv_drops1; // drops
+	// private List<d_Bill> bills;
+	// private List<d_Cashier> cashiers;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.shift_report_1);
-		ExitApplication.getInstance().addActivity(this);// 加入退出栈 
+		ExitApplication.getInstance().addActivity(this);// 加入退出栈
 
 		initViews();
 		initEvents();
 	}
- 
- 
+
 	@Override
 	public void onClick(View view) {
-		switch (view.getId()) { 
+		switch (view.getId()) {
 		}
 
 	}
@@ -104,6 +93,6 @@ public class ShiftReportActivity extends BaseActivity implements
 	}
 
 	@Override
-	protected void initEvents() { 
-	} 
+	protected void initEvents() {
+	}
 }

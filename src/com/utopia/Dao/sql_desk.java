@@ -7,11 +7,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.utopia.Model.d_Desk;
 import com.utopia.utils.Constant;
-import com.utopia.utils.DateUtils;
 
 public class sql_desk {
 	Context context;
@@ -79,13 +77,13 @@ public class sql_desk {
 		arrayOfObject[5] = paramd_Desk.getStatetime();
 		arrayOfObject[6] = paramd_Desk.getDesk_name();
 
-		Cursor c = db.rawQuery("select * from desk where desk_name='" + paramd_Desk.getDesk_name()
-				+ "'", null);
-		if(c.moveToNext()){ //该桌子已经开辟过，直接更新记录即可
+		Cursor c = db.rawQuery("select * from desk where desk_name='"
+				+ paramd_Desk.getDesk_name() + "'", null);
+		if (c.moveToNext()) { // 该桌子已经开辟过，直接更新记录即可
 			db.execSQL(
 					"update desk set state=?,people_num=?,s_account=?,starttime=?,message=?,statetime=? where desk_name=?",
 					arrayOfObject);
-		}else{ //不存在该桌子的记录，则开辟一个新桌子，插入数据库新桌子的信息
+		} else { // 不存在该桌子的记录，则开辟一个新桌子，插入数据库新桌子的信息
 			arrayOfObject = new Object[11];
 			arrayOfObject[0] = paramd_Desk.getMessage();
 			arrayOfObject[1] = paramd_Desk.getType_id();
@@ -98,8 +96,7 @@ public class sql_desk {
 			arrayOfObject[8] = paramd_Desk.getRow();
 			arrayOfObject[9] = paramd_Desk.getCol();
 			arrayOfObject[10] = paramd_Desk.getDelmark();
-			
-			
+
 			db.beginTransaction();
 			try {
 				db.execSQL(
@@ -136,7 +133,7 @@ public class sql_desk {
 		while (localCursor.moveToNext()) {
 			localArrayList.add(localCursor.getString(0));
 		}
-
+		localCursor.close();
 		return localArrayList;
 	}
 
@@ -146,7 +143,7 @@ public class sql_desk {
 		arrayOfObject[1] = desk_name;
 		db.execSQL("update desk set state=? where desk_name=?", arrayOfObject);
 	}
-	
+
 	public void delete(String desk_name) {
 		Object[] arrayOfObject = new Object[1];
 		arrayOfObject[0] = desk_name;
@@ -156,7 +153,6 @@ public class sql_desk {
 	public Cursor select(String desk_name) {
 		return db.rawQuery("select * from desk where desk_name='" + desk_name
 				+ "'", null);
-
 	}
 
 	public List<d_Desk> queryMenus(String area) {
@@ -164,7 +160,8 @@ public class sql_desk {
 		ArrayList<d_Desk> localArrayList = new ArrayList<d_Desk>();
 		Cursor localCursor = db
 				.rawQuery(
-						"select d.id,d.type_id,d.state,d.s_account,d.desk_name,d.statetime,d.starttime,d.people_num,d.row,d.col,d.message from desk as d JOIN Area as a ON trim(a.AreaId) = trim(d.type_id) where a.AreaName='"
+						"select d.id,d.type_id,d.state,d.s_account,d.desk_name,d.statetime,d.starttime,d.people_num,d.row,d.col,d.message "
+								+ "from desk as d JOIN Area as a ON trim(a.AreaId) = trim(d.type_id) where a.AreaName='"
 								+ area + "' order by d.row,d.col,d.statetime",
 						null);
 		while (localCursor.moveToNext()) {
@@ -179,9 +176,9 @@ public class sql_desk {
 					.getColumnIndex("s_account")));
 			locald_Desk.setDesk_name(localCursor.getString(localCursor
 					.getColumnIndex("desk_name")));
-			
+
 			locald_Desk.setStatetime(Integer.parseInt(localCursor
-				.getString(localCursor.getColumnIndex("statetime"))));
+					.getString(localCursor.getColumnIndex("statetime"))));
 
 			locald_Desk.setStarttime(localCursor.getString(localCursor
 					.getColumnIndex("starttime")));

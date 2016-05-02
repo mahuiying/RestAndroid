@@ -1,23 +1,16 @@
 package com.utopia.Dialog;
 
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.database.Cursor;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.utopia.Adapter.OrdersSalerecordAdapter;
-import com.utopia.Base.BaseActivity;
 import com.utopia.Dao.sql_SaleRecord;
-import com.utopia.Model.d_SaleRecord;
 import com.utopia.activity.OrdersAcitvity;
 import com.utopia.activity.R;
 import com.utopia.widget.MyTextView;
@@ -34,10 +27,10 @@ public class pop_discount implements View.OnClickListener {
 	private String tax_rate_view = "0";
 	private String tax_rate ;
 	private TextView menu_discountEdit;
-	private CheckBox tax_cb;
-	private TextView discount_text ; 
+//	private CheckBox tax_cb;
+
 	private String desk_name;
-	private d_SaleRecord localSaleRecord ; 
+//	private d_SaleRecord localSaleRecord ; 
 	public pop_discount(Context context, View paramView,String desk_name) {
    
 	   // this.localSaleRecord = localSaleRecord;
@@ -84,7 +77,7 @@ public class pop_discount implements View.OnClickListener {
 			
 			if(menu_discountEdit.getText().toString().equals(""))
 				menu_discountEdit.setText("1.00");
-			if(Float.valueOf(menu_discountEdit.getText().toString().trim())<0 ||
+			if(Float.valueOf(menu_discountEdit.getText().toString().trim())<=0.0 ||
 					Float.valueOf(menu_discountEdit.getText().toString().trim())>1){
 				    showCustomToast("sorry,discount must between 0 and 1.");
 			}else{
@@ -94,7 +87,7 @@ public class pop_discount implements View.OnClickListener {
 //			}
 			//在数据库中更新折扣  
 			//Log.i("tag",m_SaleRecord.getDiscount()+"");
-		    new sql_SaleRecord().update_discountAll(menu_discountEdit.getText().toString().trim(),desk_name);
+		    new sql_SaleRecord().update_discountAll(Float.valueOf(menu_discountEdit.getText().toString().trim()),desk_name);
 			//new sql_SaleRecord().update_discount(localSaleRecord);
 			Log.i("tag","设置discount、、、、");
 			

@@ -2,7 +2,7 @@ package com.utopia.Dao;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase; 
+import android.database.sqlite.SQLiteDatabase;
 
 import com.utopia.Model.d_Cashier;
 import com.utopia.utils.Constant;
@@ -52,6 +52,8 @@ public class sql_Cashier {
 							arrayOfObject);
 		}
 
+		cursor.close();
+		localSQLiteDatabase.close();
 		/*
 		 * Cursor m_cursor = this.db.rawQuery("select * from cashier",null );
 		 * String str = ""; while(m_cursor.moveToNext()){ str =
@@ -76,6 +78,7 @@ public class sql_Cashier {
 						"insert into cashier(changeMoney,createTime,userCode,cashierId,status) values(?,?,?,?,?)",
 						arrayOfObject);
 
+		localSQLiteDatabase.close();
 		/*
 		 * Cursor m_cursor = this.db.rawQuery("select * from cashier",null );
 		 * String str = ""; while(m_cursor.moveToNext()){ str =
@@ -94,7 +97,7 @@ public class sql_Cashier {
 			drops += Float.valueOf(cursor.getString(cursor
 					.getColumnIndex("changeMoney")));
 		}
-
+		cursor.close();
 		return drops + "";
 	}
 
@@ -106,7 +109,7 @@ public class sql_Cashier {
 			payOut += Float.valueOf(cursor.getString(cursor
 					.getColumnIndex("changeMoney")));
 		}
-
+		cursor.close();
 		return payOut + "";
 	}
 
@@ -118,19 +121,20 @@ public class sql_Cashier {
 			purchase += Float.valueOf(cursor.getString(cursor
 					.getColumnIndex("changeMoney")));
 		}
-
+		cursor.close();
 		return purchase + "";
 	}
 
 	public String getInitMoney() {
 		float initMoney = 0;
 		Cursor cursor = db.rawQuery(
-				"select * from cashier where status = 'init' and createTime>='"+Constant.clockInTime+"'", null);
+				"select * from cashier where status = 'init' and createTime>='"
+						+ Constant.clockInTime + "'", null);
 		while (cursor.moveToNext()) {
 			initMoney = Float.valueOf(cursor.getString(cursor
 					.getColumnIndex("initMoney")));
 		}
-
+		cursor.close();
 		return initMoney + "";
 	}
 
@@ -147,6 +151,7 @@ public class sql_Cashier {
 				.execSQL(
 						"insert into cashier(currentMoney,createTime,userCode,cashierId,status) values(?,?,?,?,?)",
 						arrayOfObject);
+		localSQLiteDatabase.close();
 	}
 
 	public void clear_all() {
@@ -169,13 +174,14 @@ public class sql_Cashier {
 				.execSQL(
 						"insert into cashier(id,currentMoney,initMoney,changeMoney,createTime,userCode,cashierId,status) values(?,?,?,?,?,?,?,?)",
 						arrayOfObject);
+		// localSQLiteDatabase.close();
 
 	}
-	
+
 	public void select() {
 		Cursor c = this.db.rawQuery("select *from cashier ", null);
 		while (c.moveToNext()) {
-			//Log.e("sql_cashier", c.getString(c.getColumnIndex("id")));
+			// Log.e("sql_cashier", c.getString(c.getColumnIndex("id")));
 		}
 		c.close();
 	}

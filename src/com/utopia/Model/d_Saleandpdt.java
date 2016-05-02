@@ -2,7 +2,7 @@ package com.utopia.Model;
 
 public class d_Saleandpdt {
 	 private int id;//编号
-     private int salerecordId;//交易记录编号
+     private String salerecordId;//交易记录编号
      private String pdtCode;//菜单编码
      private String pdtName;//菜单名称
      private int number;//菜的数量
@@ -14,13 +14,13 @@ public class d_Saleandpdt {
      private String status1;//状态
      private String createTime1;//开始的时间
      private String closeTime1;//结束的时间
-     
+     private int contactNumber; //为该菜结账的人数
      public d_Saleandpdt(){
     	 
      }
-     public d_Saleandpdt(int id,int salerecordId,String pdtCode,String pdtName,
+     public d_Saleandpdt(int id,String salerecordId,String pdtCode,String pdtName,
     		 int number,float price,String otherspec,String otherspec1,String otherspec2,
-    		 int priority,String status,String createTime,String closeTime){
+    		 int priority,String status,String createTime,String closeTime,int contactNumber){
     	     this.id=id;
     	     this.salerecordId=salerecordId;
     	     this.pdtCode=pdtCode;
@@ -34,9 +34,11 @@ public class d_Saleandpdt {
     	     this.status1=status;
     	     this.createTime1=createTime;
     	     this.closeTime1=closeTime;
+    	     this.contactNumber=contactNumber;
     	     
     	 
      }
+     
      public int getId() {
 		return id;
 	}
@@ -45,11 +47,11 @@ public class d_Saleandpdt {
 		this.id = id;
 	}
 
-	public int getSalerecordId() {
+	public String getSalerecordId() {
 		return salerecordId;
 	}
 
-	public void setSalerecordId(int salerecordId) {
+	public void setSalerecordId(String salerecordId) {
 		this.salerecordId = salerecordId;
 	}
 
@@ -140,26 +142,33 @@ public class d_Saleandpdt {
 	public void setCloseTime(String closeTime) {
 		this.closeTime1 = closeTime;
 	}
+	
+	public void setCustomerNumber(int number){
+		this.contactNumber=number;
+	}
+	
+	public int getCustomerNumber(){
+		return contactNumber;
+	}
 	@Override
 	public String toString() {
-		return "sql_saleandpdt [id=" + id + ", salerecordId=" + salerecordId
+		return "d_Saleandpdt [id=" + id + ", salerecordId=" + salerecordId
 				+ ", pdtCode=" + pdtCode + ", pdtName=" + pdtName + ", number="
-				+ number + ", price=" + price + ", otherspec=" + otherspec0
+				+ number + ", price=" + price + ", otherspec0=" + otherspec0
 				+ ", otherspec1=" + otherspec1 + ", otherspec2=" + otherspec2
-				+ ", priority=" + priority + ", status=" + status1
-				+ ", createTime=" + createTime1 + ", closeTime=" + closeTime1
-				+ ", getId()=" + getId() + ", getSalerecordId()="
-				+ getSalerecordId() + ", getPdtCode()=" + getPdtCode()
-				+ ", getPdtName()=" + getPdtName() + ", getNumber()="
-				+ getNumber() + ", getPrice()=" + getPrice()
-				+ ", getOtherspec()=" + getOtherspec() + ", getOtherspec1()="
-				+ getOtherspec1() + ", getOtherspec2()=" + getOtherspec2()
-				+ ", getPriority()=" + getPriority() + ", getStatus()="
-				+ getStatus() + ", getCreateTime()=" + getCreateTime()
-				+ ", getCloseTime()=" + getCloseTime() + ", getClass()="
-				+ getClass() + ", hashCode()=" + hashCode() + ", toString()="
-				+ super.toString() + "]";
+				+ ", priority=" + priority + ", status1=" + status1
+				+ ", createTime1=" + createTime1 + ", closeTime1=" + closeTime1
+				+ ", contactNumber=" + contactNumber + "]";
 	}
+	
+	
+    public String getString(){
+ 		return "{\"id\":\""+id+"\",\"salerecordId\":\""+salerecordId+"\",\"pdtCode\":\""+pdtCode+"\","+
+ 				"\"pdtName\":\""+pdtName+"\",\"number\":\""+number+"\",\"price\":\""+price+
+ 				"\",\"status\":\""+status1+"\",\"priority\":\""+priority+"\",\"createTime\":\""+createTime1+
+ 				"\",\"closeTime\":\""+closeTime1+"\",\"otherspec\":\""+otherspec0+"\",\"otherspec1\":\""+otherspec1+
+ 				"\",\"otherspec2\":\""+otherspec2+"\",\"contactNumber\":"+contactNumber+"}";
+ 	}
     
 	
 }

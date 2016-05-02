@@ -3,6 +3,7 @@ package com.utopia.activity;
 import java.io.UnsupportedEncodingException;
 import java.util.Set;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -17,12 +18,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -30,8 +29,8 @@ import com.utopia.Base.BaseActivity;
 import com.utopia.Service.BluetoothService;
 import com.utopia.utils.Constant;
 import com.utopia.utils.ExitApplication;
-import com.utopia.utils.JsonResolveUtils;
 
+@SuppressLint("HandlerLeak")
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class DeviceListActivity extends BaseActivity {
 	// Member fields
@@ -45,11 +44,10 @@ public class DeviceListActivity extends BaseActivity {
 		ExitApplication.getInstance().addActivity(this);
 		// Setup the window
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-		setContentView(R.layout.device_list); 
+		setContentView(R.layout.device_list);
 		// Set result CANCELED incase the user backs out
 		setResult(Activity.RESULT_CANCELED);
 
-		 
 		// Initialize array adapters. One for already paired devices and
 		// one for newly discovered devices
 		mPairedDevicesArrayAdapter = new ArrayAdapter<String>(this,
@@ -70,7 +68,7 @@ public class DeviceListActivity extends BaseActivity {
 
 		// Get the local Bluetooth adapter
 		mBtAdapter = BluetoothAdapter.getDefaultAdapter();
-	
+
 		// Get a set of currently paired devices
 		Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
 
@@ -83,7 +81,7 @@ public class DeviceListActivity extends BaseActivity {
 			for (BluetoothDevice device : pairedDevices) {
 				if (device.getName().startsWith("Gprinter")) {
 					mPairedDevicesArrayAdapter.add("Cashier" + i);
-							//+ "\n" + device.getAddress());
+					// + "\n" + device.getAddress());
 					i++;
 				}
 
@@ -107,8 +105,8 @@ public class DeviceListActivity extends BaseActivity {
 	private OnItemClickListener mDeviceClickListener = new OnItemClickListener() {
 		public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
 			if (v.isEnabled()) {
-				String info = ((TextView) v).getText().toString();
-				v.setEnabled(false); 
+				// String info = ((TextView) v).getText().toString();
+				v.setEnabled(false);
 				if (preView != null) {
 					preView.setEnabled(true);
 					preView.setWidth(348);
@@ -116,11 +114,10 @@ public class DeviceListActivity extends BaseActivity {
 					preView.setPadding(0, 0, 0, 50);
 				}
 				preView = (TextView) v;
-				//Constant.printerAddress = info.substring(info.length() - 17);
-				//printTest();
+				// Constant.printerAddress = info.substring(info.length() - 17);
+				// printTest();
 				startActivity(new Intent(DeviceListActivity.this,
 						CashierActivity.class));
-				
 			}
 		}
 	};
@@ -160,7 +157,7 @@ public class DeviceListActivity extends BaseActivity {
 					} catch (UnsupportedEncodingException e) {
 						send = message.getBytes();
 					}
-					//mService.write(send);
+					// mService.write(send);
 					mService.stop();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -175,7 +172,7 @@ public class DeviceListActivity extends BaseActivity {
 				dismissLoadingDialog();
 				if (!result) {
 					showCustomToast("Printer authentication failed !");
-				}else{ 
+				} else {
 					startActivity(new Intent(DeviceListActivity.this,
 							CashierActivity.class));
 				}
@@ -189,14 +186,14 @@ public class DeviceListActivity extends BaseActivity {
 	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction(); 
+			String action = intent.getAction();
 			if (BluetoothDevice.ACTION_FOUND.equals(action)) {
 				BluetoothDevice device = intent
 						.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 				if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
 					if (device.getName().startsWith("Gprinter"))
 						mPairedDevicesArrayAdapter.add("Cashier" + i);
-								//+ "\n" + device.getAddress());
+					// + "\n" + device.getAddress());
 				}
 				// When discovery is finished, change the Activity title
 			} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED
@@ -219,13 +216,11 @@ public class DeviceListActivity extends BaseActivity {
 
 	@Override
 	protected void initViews() {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	protected void initEvents() {
-		// TODO Auto-generated method stub
 
 	}
 }

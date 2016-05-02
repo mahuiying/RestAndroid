@@ -1,9 +1,5 @@
 package com.utopia.activity;
 
-import java.util.List;
-
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -12,13 +8,8 @@ import android.widget.TextView;
 import com.utopia.Base.BaseActivity;
 import com.utopia.Dao.sql_Bill;
 import com.utopia.Dao.sql_Cashier;
-import com.utopia.Dao.sql_SaleRecord;
-import com.utopia.Model.d_Cashier;
-import com.utopia.Service.HomeKeyLocker;
 import com.utopia.utils.Constant;
-import com.utopia.utils.DateUtils;
 import com.utopia.utils.ExitApplication;
-import com.utopia.utils.JsonResolveUtils;
 
 public class EndActivity extends BaseActivity implements OnClickListener {
 

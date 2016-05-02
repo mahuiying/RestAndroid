@@ -2,7 +2,6 @@ package com.utopia.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
@@ -158,7 +157,7 @@ public class MyScrollLayout extends ViewGroup {
 		case MotionEvent.ACTION_MOVE:
 			int deltaX = (int) (mLastMotionX - x);
 			mLastMotionX = x;
-			int deltaY = (int) (mLastMotionY - x);
+			// int deltaY = (int) (mLastMotionY - x);
 			mLastMotionY = y;
 
 			scrollBy(deltaX, 0);
@@ -218,7 +217,7 @@ public class MyScrollLayout extends ViewGroup {
 			final int yDiff = (int) Math.abs(mLastMotionY - y);
 
 			if (yDiff > mTouchSlop) {
-				return true ; 
+				return true;
 			} else {
 				if (xDiff > mTouchSlop) {
 					mTouchState = TOUCH_STATE_SCROLLING;

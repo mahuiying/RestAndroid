@@ -50,13 +50,13 @@ public class ViewHolder {
 	/*
 	 * 通过viewId获取控件
 	 */
+	@SuppressWarnings("unchecked")
 	public <T extends View> T getView(int viewId) {
 		View view = mViews.get(viewId);
 		if (view == null) {
 			view = mConvertView.findViewById(viewId);
 			mViews.put(viewId, view);
 		}
-
 		return (T) view;
 	}
 
@@ -71,7 +71,7 @@ public class ViewHolder {
 		tv.setTag(text);
 		return this;
 	}
-	
+
 	public ViewHolder setImageResource(int viewId, int resId) {
 		ImageView iv = getView(viewId);
 		iv.setImageResource(resId);
@@ -80,14 +80,14 @@ public class ViewHolder {
 
 	public ViewHolder setImageBitmap(int viewId, Bitmap bitmap) {
 		ImageView iv = getView(viewId);
-		iv.setImageBitmap(bitmap);;
+		iv.setImageBitmap(bitmap);
+		;
 		return this;
 	}
 
-
 	public ViewHolder setImageURI(int viewId, String uri) {
-		ImageView iv = getView(viewId);
-		//Imageloader.getInstance().loadImg(view,url);
+		// ImageView iv = getView(viewId);
+		// Imageloader.getInstance().loadImg(view,url);
 		return this;
 	}
 }

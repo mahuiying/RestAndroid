@@ -7,15 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
-import android.widget.TextView; 
+import android.widget.TextView;
 import com.utopia.Dao.sql_desk;
 import com.utopia.activity.R;
 
 public class DeskgridAdapter extends BaseAdapter {
 	private Context context;
 	private ArrayList<String> mList;
-	private String state ;
-	public DeskgridAdapter(Context paramContext,String state) {
+	private String state;
+
+	public DeskgridAdapter(Context paramContext, String state) {
 		this.state = state;
 		this.context = paramContext;
 		addItemByList();
@@ -23,13 +24,14 @@ public class DeskgridAdapter extends BaseAdapter {
 
 	public void addItemByList() {
 		this.mList = new sql_desk()
-				.recordlist4("select desk_name from desk where state !='"+state+"'");
+				.recordlist4("select desk_name from desk where state !='"
+						+ state + "'");
 	}
 
 	public void execsql(String paramString) {
 		this.mList = new sql_desk()
 				.recordlist4("select a.desk_name from desk as a JOIN Area as b ON trim(a.type_id) = trim(b.AreaId) where (trim(b.AreaName)='"
-						+ paramString + "') and a.state !='"+state+"'");
+						+ paramString + "') and a.state !='" + state + "'");
 		notifyDataSetChanged();
 	}
 

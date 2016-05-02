@@ -6,7 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.TextView; 
+import android.widget.TextView;
+
 import com.utopia.activity.R;
 import com.utopia.utils.Constant;
 
@@ -34,6 +35,7 @@ public class OrdersmgAdapter extends BaseAdapter implements
 		return paramInt;
 	}
 
+	@SuppressWarnings("deprecation")
 	public View getView(int paramInt, View paramView, ViewGroup paramViewGroup) {
 		if (paramView == null) {
 			View localView = LayoutInflater.from(this.context).inflate(

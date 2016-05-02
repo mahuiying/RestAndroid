@@ -17,10 +17,12 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
+import android.util.Log;
+
 /**
  * @author U
  * 
- *  以同步方式发送Http请求
+ *         以同步方式发送Http请求
  */
 public class SyncHttp {
 
@@ -40,7 +42,6 @@ public class SyncHttp {
 		if (null != params && !params.equals("")) {
 			url += "?" + params;
 		}
-
 		int timeoutConnection = 3000;
 		int timeoutSocket = 5000;
 		HttpParams httpParameters = new BasicHttpParams();// Set the timeout in
@@ -57,12 +58,12 @@ public class SyncHttp {
 		// 构造HttpClient的实例
 		HttpClient httpClient = new DefaultHttpClient(httpParameters);
 		// 创建GET方法的实例
+		url= url.replaceAll(" ", "%20");
 		HttpGet httpGet = new HttpGet(url);
 		try {
 			HttpResponse httpResponse = httpClient.execute(httpGet);
 			int statusCode = httpResponse.getStatusLine().getStatusCode();
-			if (statusCode == HttpStatus.SC_OK) // SC_OK = 200
-			{
+			if (statusCode == HttpStatus.SC_OK) { // SC_OK = 200
 				// 获得返回结果
 				response = EntityUtils.toString(httpResponse.getEntity());
 			} else {
@@ -71,6 +72,7 @@ public class SyncHttp {
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
+		// Log.i("tag", response);
 		return response;
 	}
 
@@ -100,6 +102,7 @@ public class SyncHttp {
 		HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
 		// 构造HttpClient的实例
 		HttpClient httpClient = new DefaultHttpClient(httpParameters);
+		url= url.replaceAll(" ", "%20");
 		HttpPost httpPost = new HttpPost(url);
 		if (params.size() >= 0) {
 			// 设置httpPost请求参数

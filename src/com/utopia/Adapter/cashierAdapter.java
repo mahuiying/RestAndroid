@@ -1,8 +1,5 @@
 package com.utopia.Adapter;
 
-import com.utopia.Dialog.chooseDrawerDialog;
-import com.utopia.utils.Constant;
-
 import android.R;
 import android.content.Context;
 import android.database.Cursor;
@@ -14,27 +11,28 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-public class cashierAdapter extends BaseAdapter{
+import com.utopia.utils.Constant;
+
+public class cashierAdapter extends BaseAdapter {
 
 	private Context context;
 	private String[] cashier;
-	public cashierAdapter(Context context){
-		this.context=context;
-		cashier=new String[20];
+
+	public cashierAdapter(Context context) {
+		this.context = context;
+		cashier = new String[20];
 		SQLiteDatabase db;
 		db = Constant.openDatabase();
 		Cursor c = db.rawQuery("select * from cashier ", null);
-		int i=0;
-		while (c.moveToNext()) {
-			cashier[i]=c.getString(c.getColumnIndex("id"));
-			Log.e("sql_cashier", c.getString(c.getColumnIndex("id")));
+		int i = 0;
+		if (c.moveToFirst()) {
+			cashier[i] = c.getString(c.getColumnIndex("cashierId"));
+			Log.i("tag", c.getString(c.getColumnIndex("cashierId")));
 			i++;
 		}
 		c.close();
-		
-	}
-	
 
+	}
 
 	@Override
 	public int getCount() {
@@ -57,22 +55,24 @@ public class cashierAdapter extends BaseAdapter{
 	@Override
 	public View getView(int paramInt, View paramView, ViewGroup paramViewGroup) {
 		// TODO Auto-generated method stub
-		AppItem localAppItem=new AppItem();
-		if(paramView==null){
-			paramView=LayoutInflater.from(this.context).inflate(
-					android.R.layout.simple_list_item_1,null);
-			localAppItem.cashierId=(TextView) paramView.findViewById(R.id.text1);
+		AppItem localAppItem = new AppItem();
+		if (paramView == null) {
+			paramView = LayoutInflater.from(this.context).inflate(
+					android.R.layout.simple_list_item_1, null);
+			localAppItem.cashierId = (TextView) paramView
+					.findViewById(R.id.text1);
 			paramView.setTag(localAppItem);
-		}else{
-			localAppItem=(AppItem) paramView.getTag();
-			localAppItem.cashierId.setText(cashier[paramInt]);
+		} else {
+			localAppItem = (AppItem) paramView.getTag();
+			if (paramInt < 20 || !cashier[paramInt].equals("")) {
+				localAppItem.cashierId.setText(cashier[paramInt]);
+			}
 		}
 		return paramView;
 	}
-	public class AppItem{
+
+	public class AppItem {
 		TextView cashierId;
 	}
-
-	
 
 }

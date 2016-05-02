@@ -1,367 +1,225 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="200dip"
-    android:layout_height="fill_parent"
-    android:background="#7B0000"
- >
+    android:layout_width="305px"
+    android:layout_height="match_parent"
+    android:background="#5E5E5E" >
+
     <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="none" >
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-    <LinearLayout
-        android:id="@+id/menu_setting"
-        android:layout_width="200dip"
-        android:layout_height="122dp"
-        android:gravity="center"
-        android:orientation="vertical" >
+        android:layout_width="305px"
+        android:layout_height="match_parent"
+        android:scrollbars="none" >
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"
-            android:gravity="center" >
-
-            <ImageView
-                android:layout_width="200dip"
-                android:layout_height="wrap_content"
-                android:src="@drawable/setting" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center" >
+            android:layout_width="305px"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
 
             <TextView
-                android:layout_width="200dip"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Setting"
-                android:textColor="@color/white"
+                android:text="Tables"
+                android:textColor="#797979"
                 android:textSize="20sp" />
-        </LinearLayout>
-    </LinearLayout>
 
-    <ImageView
-        android:layout_width="200dip"
-        android:layout_height="wrap_content"
-        android:src="@drawable/menu_split" />
-
-    <LinearLayout
-        android:id="@+id/menu_regular_tables"
-        android:layout_width="wrap_content"
-        android:layout_height="122dp"
-        android:gravity="center"
-        android:orientation="vertical" >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"
-            android:gravity="center" >
-
-            <ImageView
-                android:layout_width="200dip"
-                android:layout_height="wrap_content"
-                android:src="@drawable/regular_tables" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center" >
-
-            <TextView
-                android:layout_width="200dip"
-                android:layout_height="wrap_content"
+            <LinearLayout
+                android:id="@+id/menu_regular_tables"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
                 android:gravity="center"
-                android:text="Regular Tables"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
-        </LinearLayout>
-    </LinearLayout>
+                android:orientation="vertical" >
 
-    <ImageView
-        android:layout_width="200dip"
-        android:layout_height="wrap_content"
-        android:src="@drawable/menu_split" />
+                <TextView
+                    android:id="@+id/tv_main_tables"
+                    android:layout_width="200dip"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="MAIN TABLES"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+            </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/menu_liquors"
-        android:layout_width="match_parent"
-        android:layout_height="122dp"
-        android:gravity="center"
-        android:orientation="vertical" >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"
-            android:gravity="center" >
-
-            <ImageView
+            <LinearLayout
                 android:id="@+id/menu_liquors"
-                android:layout_width="200dip"
-                android:layout_height="wrap_content"
-                android:src="@drawable/liquors" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center" >
-
-            <TextView
-                android:layout_width="200dip"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
                 android:gravity="center"
-                android:text="Liquors"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
-        </LinearLayout>
-    </LinearLayout>
+                android:orientation="vertical" >
 
-    <ImageView
-        android:layout_width="200dip"
-        android:layout_height="wrap_content"
-        android:src="@drawable/menu_split" />
+                <TextView
+                    android:id="@+id/tv_liquors"
+                    android:layout_width="200dip"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="LIQUORS"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+            </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/menu_sushi_bar"
-        android:layout_width="match_parent"
-        android:layout_height="122dp"
-        android:gravity="center"
-        android:orientation="vertical" >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"
-            android:gravity="center" >
-
-            <ImageView
-                android:layout_width="200dip"
-                android:layout_height="wrap_content"
-                android:src="@drawable/sushi_bar" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center" >
-
-            <TextView
-                android:layout_width="200dip"
-                android:layout_height="wrap_content"
+            <LinearLayout
+                android:id="@+id/menu_sushi_bar"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
                 android:gravity="center"
-                android:text="Sushi Bar"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
-        </LinearLayout>
-    </LinearLayout>
+                android:orientation="vertical" >
 
-    <ImageView
-        android:layout_width="200dip"
-        android:layout_height="wrap_content"
-        android:src="@drawable/menu_split" />
+                <TextView
+                    android:id="@+id/tv_sushi_bar"
+                    android:layout_width="200dip"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="SUSHI BAR"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+            </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/menu_take_out"
-        android:layout_width="match_parent"
-        android:layout_height="122dp"
-        android:gravity="center"
-        android:orientation="vertical" >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"
-            android:gravity="center" >
-
-            <ImageView
-                android:layout_width="200dip"
-                android:layout_height="wrap_content"
-                android:src="@drawable/take_out" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center" >
-
-            <TextView
-                android:layout_width="200dip"
-                android:layout_height="wrap_content"
+            <LinearLayout
+                android:id="@+id/menu_take_out"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
                 android:gravity="center"
-                android:text="Take Out"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
-        </LinearLayout>
-    </LinearLayout>
+                android:orientation="vertical" >
 
-    <ImageView
-        android:layout_width="200dip"
-        android:layout_height="wrap_content"
-        android:src="@drawable/menu_split" />
+                <TextView
+                    android:id="@+id/tv_take_out"
+                    android:layout_width="200dip"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="TAKE OUT"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+            </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/menu_dilivery"
-        android:layout_width="match_parent"
-        android:layout_height="122dp"
-        android:gravity="center"
-        android:orientation="vertical" >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"
-            android:gravity="center" >
-
-            <ImageView
-                android:layout_width="200dip"
-                android:layout_height="wrap_content"
-                android:src="@drawable/dilivery" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center" >
-
-            <TextView
-                android:layout_width="200dip"
-                android:layout_height="wrap_content"
+            <LinearLayout
+                android:id="@+id/menu_dilivery"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
                 android:gravity="center"
-                android:text="Dilivery"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
-        </LinearLayout>
-    </LinearLayout>
-    <ImageView
-        android:layout_width="200dip"
-        android:layout_height="wrap_content"
-        android:src="@drawable/menu_split" />
-   
-    <LinearLayout
-        android:id="@+id/menu_staff"
-        android:layout_width="200dip"
-        android:layout_height="140dp"
-      
-        android:orientation="vertical">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" 
-            android:text="Staff"
-            android:textColor="@color/white"
-            android:textSize="15sp"/>
-           <LinearLayout
-            android:id="@+id/staff_ll1"
-            android:layout_width="200dip"
-            android:layout_height="60dp"
-            android:gravity="center" >
+                android:orientation="vertical" >
 
-            <TextView
-                
-                android:layout_width="200dip"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="MY SALES REPORT"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
-        
-        </LinearLayout>
-       <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:src="@drawable/menu_split" />
-    <LinearLayout
-            android:id="@+id/staff_ll2"
-            android:layout_width="200dip"
-            android:layout_height="60dp"
-            android:gravity="center" >
+                <TextView
+                    android:id="@+id/tv_delivery"
+                    android:layout_width="200dip"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="DELIVERY"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+            </LinearLayout>
 
-            <TextView
-                
-                android:layout_width="200dip"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="CURRENT DRAWER"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
-        </LinearLayout>
-         
-    </LinearLayout>
-      <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/menu_split" />
-      
-    <LinearLayout
-        android:id="@+id/menu_manager"
-        android:layout_width="200dip"
-        android:layout_height="140dp"
-        
-        android:orientation="vertical"
-        >
-    <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" 
-            android:text="Manager"
-            android:textColor="@color/white"
-            android:textSize="15sp"/>
-    <LinearLayout
-            android:id="@+id/manager_ll1"
-            android:layout_width="200dip"
-            android:layout_height="60dp"
-            android:gravity="center" >
+            <LinearLayout
+                android:id="@+id/menu_staff"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:orientation="vertical" >
 
-            <TextView
-                
-                android:layout_width="200dip"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="SALES REPORT"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
-        </LinearLayout>
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:src="@drawable/menu_split" />
-    <LinearLayout
-           android:id="@+id/manager_ll2"
-            android:layout_width="200dip"
-            android:layout_height="60dp"
-            android:gravity="center" >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Staff"
+                    android:textColor="#797979"
+                    android:textSize="20sp" />
 
-            <TextView
-                
-                android:layout_width="200dip"
-                android:layout_height="50dp"
+                <LinearLayout
+                    android:id="@+id/staff_ll1"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:gravity="center" >
+
+                    <TextView
+                        android:id="@+id/tv_my_sales_report"
+                        android:layout_width="200dip"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="MY SALES REPORT"
+                        android:textColor="@color/white"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/staff_ll2"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:gravity="center" >
+
+                    <TextView
+                        android:id="@+id/tv_current_drawer"
+                        android:layout_width="200dip"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="CURRENT DRAWER"
+                        android:textColor="@color/white"
+                        android:textSize="20sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/menu_manager"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Manager"
+                    android:textColor="#797979"
+                    android:textSize="20sp" />
+
+                <LinearLayout
+                    android:id="@+id/manager_ll1"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:gravity="center" >
+
+                    <TextView
+                        android:id="@+id/tv_sales_report"
+                        android:layout_width="200dip"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="SALES REPORT"
+                        android:textColor="@color/white"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/manager_ll2"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:gravity="center" >
+
+                    <TextView
+                        android:id="@+id/tv_drawers_history"
+                        android:layout_width="200dip"
+                        android:layout_height="50dp"
+                        android:gravity="center"
+                        android:text="DRAWERS HISTORY"
+                        android:textColor="@color/white"
+                        android:textSize="20sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:layout_marginTop="105dp"
                 android:gravity="center"
-                android:text="DRAWERS HISTORY"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:orientation="vertical" >
+
+                <Button
+                    android:id="@+id/btn_logout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/logout"
+                    android:textColor="#5E5E5E" />
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-   <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/menu_split" />
- </LinearLayout>
-</ScrollView>
+    </ScrollView>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="fill_parent"
+        android:background="#767676" >
+    </View>
+
 </LinearLayout>

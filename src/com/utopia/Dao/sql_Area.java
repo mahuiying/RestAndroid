@@ -48,6 +48,7 @@ public class sql_Area {
 			throw localSQLException;
 		} finally {
 			localSQLiteDatabase.endTransaction();
+			localSQLiteDatabase.close();
 		}
 	}
 
@@ -95,6 +96,7 @@ public class sql_Area {
 		arrayOfObject[1] = paramd_Area.getAreaName();
 		localSQLiteDatabase.execSQL(
 				"INSERT INTO Area(AreaId,AreaName) values(?,?)", arrayOfObject);
+		// localSQLiteDatabase.close();
 	}
 
 	public void update(d_Area paramd_Area, String paramString1,
@@ -105,5 +107,6 @@ public class sql_Area {
 		arrayOfObject[1] = paramd_Area.getAreaId();
 		localSQLiteDatabase.execSQL(
 				"update Area set AreaName=? where AreaId=?", arrayOfObject);
+		localSQLiteDatabase.close();
 	}
 }

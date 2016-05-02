@@ -34,7 +34,7 @@ public class CheckBillAdapter extends BaseAdapter implements
 			if (localAppItem != null) {
 				this.m_CallCursor.moveToPosition(paramInt1 + i);
 				d_SaleRecord locald_SaleRecord = new d_SaleRecord();
-				locald_SaleRecord.setBILLID(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("BILLID")));
+				//locald_SaleRecord.setBILLID(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("BILLID")));
 				locald_SaleRecord.setPdtCODE(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("PdtCODE")));
 				locald_SaleRecord.setPdtName(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("PdtName")));
 				locald_SaleRecord.setPrice(Float.valueOf(
@@ -108,16 +108,16 @@ public class CheckBillAdapter extends BaseAdapter implements
 		}
 		this.m_CallCursor.moveToPosition(paramInt);
 		d_SaleRecord locald_SaleRecord = new d_SaleRecord();
-		locald_SaleRecord.setBILLID(this.m_CallCursor.getString(m_CallCursor.getColumnIndex("BILLID")));
+		//locald_SaleRecord.setBILLID(this.m_CallCursor.getString(m_CallCursor.getColumnIndex("BILLID")));
 		locald_SaleRecord.setPdtCODE(this.m_CallCursor.getString(m_CallCursor.getColumnIndex("PdtCODE")));
 		locald_SaleRecord.setPdtName(this.m_CallCursor.getString(m_CallCursor.getColumnIndex("PdtName")));
 		locald_SaleRecord.setPrice(Float
 				.valueOf(this.m_CallCursor.getString(m_CallCursor.getColumnIndex("Price"))).floatValue());
 		AppItem localAppItem1 = (AppItem) paramView.getTag();
 	//编号
-		localAppItem1.m_check_list_no.setText(locald_SaleRecord.getBILLID());
+		//localAppItem1.m_check_list_no.setText(locald_SaleRecord.getBILLID());
 	//订单号
-		localAppItem1.m_check_list_order_no.setText(locald_SaleRecord.getBILLID());
+		//localAppItem1.m_check_list_order_no.setText(locald_SaleRecord.getBILLID());
 	//台号
 		localAppItem1.m_check_list_tableno.setText(String
 				.valueOf(locald_SaleRecord.getDesk_name()));
@@ -126,7 +126,7 @@ public class CheckBillAdapter extends BaseAdapter implements
 	//总价
 		localAppItem1.m_check_list_sumprice.setText(locald_SaleRecord.getPrice()+"");
 	//状态
-		localAppItem1.m_check_list_state.setText(locald_SaleRecord.getStatus());
+		localAppItem1.m_check_list_state.setText(locald_SaleRecord.getStatus1());
 		localAppItem1.m_check_list_operator.setTag(locald_SaleRecord);
 		localAppItem1.m_check_list_detail.setTag(locald_SaleRecord);
 		localAppItem1.m_check_list_operator.setOnClickListener(this);

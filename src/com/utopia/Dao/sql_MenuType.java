@@ -96,6 +96,7 @@ public class sql_MenuType {
 				.execSQL(
 						"INSERT INTO MenuType(TypeId,TypeName,TypeParentId) values(?,?,?)",
 						arrayOfObject);
+		// localSQLiteDatabase.close();
 	}
 
 	public void update(d_MenuType paramd_TypeName) {
@@ -107,5 +108,6 @@ public class sql_MenuType {
 		localSQLiteDatabase.execSQL(
 				"update MenuType set TypeName=?,TypeParentId=? where TypeId=?",
 				arrayOfObject);
+		localSQLiteDatabase.close();
 	}
 }

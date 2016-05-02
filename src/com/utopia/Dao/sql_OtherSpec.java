@@ -1,5 +1,7 @@
 package com.utopia.Dao;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -7,8 +9,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.utopia.Model.d_OtherSpec;
 import com.utopia.utils.Constant;
-
-import java.util.ArrayList;
 
 public class sql_OtherSpec {
 	Context context;
@@ -103,6 +103,7 @@ public class sql_OtherSpec {
 				.execSQL(
 						"INSERT INTO OtherSpec(OtherSpecTypeID,OtherSpecNo,OtherSpecName) values(?,?,?)",
 						arrayOfObject);
+		localSQLiteDatabase.close();
 	}
 
 	public void update(d_OtherSpec paramd_OtherSpec, String paramString1,
@@ -116,5 +117,6 @@ public class sql_OtherSpec {
 				.execSQL(
 						"update OtherSpec set OtherSpecName=? , OtherSpecPy=? where OtherSpecTypeID=?",
 						arrayOfObject);
+		localSQLiteDatabase.close();
 	}
 }

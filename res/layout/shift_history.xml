@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/shiftHistory"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#676767"
@@ -7,6 +8,7 @@
     android:paddingRight="5dp"
     android:paddingTop="10dp"
     android:paddingBottom="10dp"
+    android:baselineAligned="false"
     >
     <LinearLayout
         android:layout_width="0dp"
@@ -19,7 +21,7 @@
       android:layout_height="wrap_content"
       android:text="Yangyang Fan"
       android:textColor="#ffffff"
-      android:textSize="20dp"/>
+      android:textSize="20sp"/>
   <TextView
       android:layout_marginLeft="80dp"
       android:id="@+id/time"
@@ -27,7 +29,7 @@
       android:layout_height="wrap_content"
       android:text="08:20AM-11:52AM"
       android:textColor="#ffffff"
-      android:textSize="20dp"/>
+      android:textSize="20sp"/>
   </LinearLayout>
 
     <LinearLayout
@@ -37,25 +39,26 @@
         android:gravity="right" >
 
         <TextView
-            android:id="@+id/name"
+            android:id="@+id/netSales"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="right"
-            android:text="Yangyang Fan"
+            android:text="$533.4"
             android:textColor="#ffffff"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
 
         <TextView
-            android:id="@+id/time"
+            android:id="@+id/tips"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="80dp"
             android:gravity="right"
-            android:text="08:20AM-11:52AM"
+            android:text="30"
             android:textColor="#ffffff"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
 
         <ImageView
+            android:id="@+id/imageView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"

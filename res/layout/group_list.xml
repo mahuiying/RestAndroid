@@ -3,13 +3,12 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/title_function_bg"
-    android:orientation="horizontal"
-     >
+    android:orientation="horizontal" >
+
     <ListView
         android:id="@+id/lvGroup"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:cacheColorHint="#000000"
-          />
- 
+        android:cacheColorHint="#000000" />
+
 </LinearLayout>

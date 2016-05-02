@@ -1,7 +1,5 @@
 package com.utopia.activity;
 
-import com.utopia.utils.ExitApplication;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

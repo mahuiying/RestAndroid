@@ -1,26 +1,24 @@
 package com.utopia.Adapter;
 
-import java.text.DecimalFormat;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.TextView;  
+import android.widget.TextView;
+
 import com.utopia.Dao.sql_SaleRecord;
 import com.utopia.Model.d_SaleRecord;
 import com.utopia.activity.R;
 import com.utopia.utils.Constant;
-import com.utopia.widget.MyDialog;
 
 public class PayBillAdapter extends BaseAdapter implements
 		View.OnClickListener {
 	private Context context;
 	public boolean mBusy = false;
 	public Cursor m_CallCursor;
-	private MyDialog mBackDialog;
+//	private MyDialog mBackDialog;
 	private String desk_name ;
 	//DecimalFormat decimalFormat = new DecimalFormat("0.00");// 构造方法的字符格式这里如果小数不足2位,会以0补足.
 	
@@ -74,14 +72,14 @@ public class PayBillAdapter extends BaseAdapter implements
 		}
 		this.m_CallCursor.moveToPosition(paramInt);
 		d_SaleRecord locald_SaleRecord = new d_SaleRecord();
-		locald_SaleRecord.setBILLID(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("BILLID")));
-		locald_SaleRecord.setPdtCODE(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("PdtCODE")));
-		locald_SaleRecord.setPdtName(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("PdtName")));
+		//locald_SaleRecord.setBILLID(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("BILLID")));
+		locald_SaleRecord.setPdtCODE(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("pdtCode")));
+		locald_SaleRecord.setPdtName(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("pdtName")));
 		locald_SaleRecord.setPrice(Float
-				.valueOf(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("Price"))).floatValue());
+				.valueOf(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("price"))).floatValue());
 		locald_SaleRecord.setNumber((int) Float.valueOf(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("number"))).floatValue());
-		locald_SaleRecord.setStatus(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("status")));
-		locald_SaleRecord.setOtherSpec(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("OtherSpec")));
+		locald_SaleRecord.setStatus1(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("status1")));
+		locald_SaleRecord.setOtherSpec(this.m_CallCursor.getString(this.m_CallCursor.getColumnIndex("otherspec0")));
 		AppItem localAppItem1 = (AppItem) paramView.getTag();
 		localAppItem1.menu_name.setText(locald_SaleRecord.getPdtName());
 		localAppItem1.menu_price.setText(Constant.decimalFormat.format( (locald_SaleRecord

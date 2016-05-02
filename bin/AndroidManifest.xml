@@ -16,8 +16,9 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.READ_LOGS" />
-
+    <!-- android:name="com.utopia.activity.MyApplication" -->
     <application
+        android:allowBackup="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen" >
@@ -47,7 +48,6 @@
             android:name="com.utopia.activity.SettingActivity"
             android:screenOrientation="landscape"
             android:windowSoftInputMode="adjustUnspecified|stateHidden" />
-        
         <activity
             android:name="com.utopia.activity.StatisticActivity"
             android:screenOrientation="landscape" />
@@ -125,7 +125,7 @@
         <activity
             android:name="com.utopia.activity.CleanTableActivity"
             android:screenOrientation="landscape" />
-       <activity 
-           android:name="com.utopia.activity.InternetBroadcastReceiver"/>
-       </application>
+        <activity android:name="com.utopia.activity.InternetBroadcastReceiver" />
+    </application>
+
 </manifest>

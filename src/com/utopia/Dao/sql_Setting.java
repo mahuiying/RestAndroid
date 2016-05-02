@@ -55,7 +55,7 @@ public class sql_Setting {
 							"INSERT INTO Setting(serverip,serialNumber,GraphicalOrder,ListOrder,CodeOrder,FastOrder,Custom,Waiter) values(?,?,?,?,?,?,?,?)",
 							arrayOfObject);
 		}
-
+		localSQLiteDatabase.close();
 	}
 
 	public void updateIP(String ip) {
@@ -128,6 +128,7 @@ public class sql_Setting {
 			mySetting.setWaiter(waiter);
 		}
 
+		cursor.close();
 		return mySetting;
 	}
 
@@ -137,6 +138,7 @@ public class sql_Setting {
 		if (cursor.moveToNext()) {
 			serverip = cursor.getString(cursor.getColumnIndex("serverip")); //
 		}
+		cursor.close();
 		return serverip;
 	}
 

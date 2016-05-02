@@ -1,6 +1,5 @@
 package com.utopia.Dialog;
 
-import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
 import android.content.Context;
 
 import com.utopia.Base.BaseDialog;

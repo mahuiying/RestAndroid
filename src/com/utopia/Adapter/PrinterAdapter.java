@@ -15,7 +15,7 @@ public class PrinterAdapter extends BaseAdapter implements View.OnClickListener 
 	ArrayList<String> datalist;
 	public boolean mBusy = false;
 
-	public PrinterAdapter(Context paramContext , ArrayList<String> datalist) {
+	public PrinterAdapter(Context paramContext, ArrayList<String> datalist) {
 		this.context = paramContext;
 		this.datalist = datalist;
 	}
@@ -39,14 +39,14 @@ public class PrinterAdapter extends BaseAdapter implements View.OnClickListener 
 	}
 
 	public View getView(int paramInt, View paramView, ViewGroup paramViewGroup) {
-		TextView localTextView  = new TextView(this.context);
+		TextView localTextView = new TextView(this.context);
 		localTextView.setTextColor(Color.WHITE);
 		localTextView.setPadding(0, 20, 0, 20);
 		localTextView.setTextSize(22);
 		localTextView.setLayoutParams(new AbsListView.LayoutParams(-2, -2));
-		
+
 		localTextView.setText(this.datalist.get(paramInt).trim());
-		if(paramInt==2){
+		if (paramInt == 2) {
 			localTextView.setTextColor(Color.BLACK);
 		}
 		return localTextView;

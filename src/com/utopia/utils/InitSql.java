@@ -7,7 +7,6 @@ import com.utopia.Dao.sql_Cashier;
 import com.utopia.Dao.sql_Contact;
 import com.utopia.Dao.sql_MenuType;
 import com.utopia.Dao.sql_Product;
-import com.utopia.Dao.sql_SaleRecord;
 import com.utopia.Dao.sql_Saleandpdt;
 import com.utopia.Dao.sql_Sales;
 import com.utopia.Dao.sql_Tax;
@@ -20,7 +19,6 @@ import com.utopia.Model.d_Desk;
 import com.utopia.Model.d_MenuType;
 import com.utopia.Model.d_Product;
 import com.utopia.Model.d_Sale;
-import com.utopia.Model.d_SaleRecord;
 import com.utopia.Model.d_Saleandpdt;
 import com.utopia.Model.d_Tax;
 

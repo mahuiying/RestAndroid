@@ -8,10 +8,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Dialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -30,6 +30,7 @@ import com.utopia.utils.Constant;
 import com.utopia.utils.JsonResolveUtils;
 
 
+@SuppressLint("HandlerLeak")
 public class UpdateManager
 {
 	/* 下载中 */

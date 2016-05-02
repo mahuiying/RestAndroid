@@ -27,8 +27,9 @@ public class PayBillTotalAdapter<T> extends CommomAdapter<T> {
 	public void convert(final ViewHolder holder, T t) {
 		ds = (d_SaleRecord) t;
 		holder.setText(R.id.dish_item, ds.getPdtName())
-				.setText(R.id.dish_price,(decimalFormat.format(ds.getPrice() * ds.getNumber())))
-				.setText(R.id.shared, ds.getCustomerNo()+"");
+				.setText(R.id.dish_price,
+						(decimalFormat.format(ds.getPrice() * ds.getNumber())))
+				.setText(R.id.shared, ds.getCustomerNo() + "");
 
 		if (ds.getCustomerNo() > 0) {
 			holder.getView(R.id.dish).setBackgroundColor(

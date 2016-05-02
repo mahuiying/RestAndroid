@@ -1,7 +1,8 @@
 package com.utopia.Service;
 
-import com.utopia.activity.R;
-
+import static android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+import static android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
+import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.os.Bundle;
@@ -9,11 +10,8 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import static android.view.WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
-import static android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
-import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
-import static android.view.WindowManager.LayoutParams.TYPE_PHONE;
+
+import com.utopia.activity.R;
 
 /**
  * Created by shaobin on 2014/3/22.
@@ -53,7 +51,7 @@ public class HomeKeyLocker {
 
         public final boolean dispatchTouchEvent(MotionEvent motionevent) {
             return true;
-        }
+            }
 
         protected final void onCreate(Bundle bundle) {
             super.onCreate(bundle);

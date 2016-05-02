@@ -8,7 +8,6 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -31,7 +30,6 @@ import com.utopia.Base.BaseActivity;
 import com.utopia.Dao.sql_Customer;
 import com.utopia.Dao.sql_SaleRecord;
 import com.utopia.Model.d_Bill;
-import com.utopia.Model.d_Customer;
 import com.utopia.Model.d_Desk;
 import com.utopia.Model.d_SaleRecord;
 import com.utopia.Service.BluetoothService;
@@ -43,7 +41,7 @@ public class PayBillActivity extends BaseActivity implements
 		View.OnClickListener {
 	public PayBillTotalAdapter<d_SaleRecord> sladapter;
 	private ListView localListView;
-	private TextView tip; // 小费
+	// private TextView tip; // 小费
 	private boolean isSplit = false;
 	// 添加按钮
 	private Button bt_add;
@@ -58,7 +56,7 @@ public class PayBillActivity extends BaseActivity implements
 	public static final String TOAST = "toast";
 	// Intent request codes
 	public static final int REQUEST_CONNECT_DEVICE = 1;
-	private static final int REQUEST_ENABLE_BT = 2;
+	// private static final int REQUEST_ENABLE_BT = 2;
 	private BluetoothAdapter mBluetoothAdapter = null;
 	// Member object for the services
 	private BluetoothService mService = null;
@@ -69,12 +67,12 @@ public class PayBillActivity extends BaseActivity implements
 	private String str;
 	private TextView tax_id;
 	private TextView totalText; // 税收+菜单总价
-	private float tax;
+	// private float tax;
 	private float discount;
 	private String total = "";
 	private float subtotal = (float) 0.00;
-	private String md5 = "";
-	private Context context;
+	// private String md5 = "";
+	// private Context context;
 	DecimalFormat decimalFormat = new DecimalFormat("0.00");// 构造方法的字符格式这里如果小数不足2位,会以0补足.
 	public PayBillBillAdapter<d_SaleRecord> sladapterBill;
 	private Button printbill;
@@ -130,7 +128,7 @@ public class PayBillActivity extends BaseActivity implements
 			discount = Float.valueOf(
 					getIntent().getExtras().getString("discount")).floatValue();
 
-		md5 = getIntent().getExtras().getString("md5");
+		// md5 = getIntent().getExtras().getString("md5");
 
 		total = getIntent().getExtras().getString("total");
 		new sql_Customer().delete("delete from Customer");// 清空bill
@@ -271,9 +269,10 @@ public class PayBillActivity extends BaseActivity implements
 
 		Cursor m_CallCursor, sub_CallCursor;
 		m_CallCursor = new sql_SaleRecord()
-				.recordlist3("select * from SaleRecord as s join saleandpdt as s2 on s2.salerecordId=s.itemNo" +
-						"where deskName = '"
-						+ Constant.table_id + "' and s2.status1!='Finish'");
+				.recordlist3("select * from SaleRecord as s join saleandpdt as s2 on s2.salerecordId=s.itemNo"
+						+ "where deskName = '"
+						+ Constant.table_id
+						+ "' and s2.status1!='Finish'");
 		while (m_CallCursor.moveToNext()) {
 			d_SaleRecord ds = new d_SaleRecord();
 			ds.setPdtName(m_CallCursor.getString(m_CallCursor
@@ -285,8 +284,8 @@ public class PayBillActivity extends BaseActivity implements
 			ds.setNumber((int) Float.valueOf(
 					m_CallCursor.getString(m_CallCursor
 							.getColumnIndex("number"))).floatValue());
-			ds.setItemNo(Integer.parseInt(m_CallCursor.getString(m_CallCursor
-					.getColumnIndex("itemNo"))));
+			ds.setItemNo(m_CallCursor.getString(m_CallCursor
+					.getColumnIndex("itemNo")));
 
 			try {
 				sub_CallCursor = new sql_SaleRecord()
@@ -335,15 +334,18 @@ public class PayBillActivity extends BaseActivity implements
 
 		Cursor m_CallCursor, sub_CallCursor;
 		m_CallCursor = new sql_SaleRecord()
-				.recordlist3("select s2.pdtName,s2.price,s2.number,s.itemNo,c.customNo from " +
-						"SaleRecord as s join Customer as c on s.itemNo=c.ItemNo " +
-						"SaleRecord as s join saleandpdt as s2 on s.itemNo=s2.salerecordId " +
-						"where s.deskName = '"+ Constant.table_id
-						+ "' and s2.status1!='Finish' and c.customNo='" + i + "'");
+				.recordlist3("select s2.pdtName,s2.price,s2.number,s.itemNo,c.customNo from "
+						+ "SaleRecord as s join Customer as c on s.itemNo=c.ItemNo "
+						+ "SaleRecord as s join saleandpdt as s2 on s.itemNo=s2.salerecordId "
+						+ "where s.deskName = '"
+						+ Constant.table_id
+						+ "' and s2.status1!='Finish' and c.customNo='"
+						+ i
+						+ "'");
 		while (m_CallCursor.moveToNext()) {
 			d_SaleRecord ds = new d_SaleRecord();
-			ds.setItemNo(Integer.parseInt(m_CallCursor.getString(m_CallCursor
-					.getColumnIndex("itemNo"))));
+			ds.setItemNo(m_CallCursor.getString(m_CallCursor
+					.getColumnIndex("itemNo")));
 			ds.setPdtName(m_CallCursor.getString(m_CallCursor
 					.getColumnIndex("pdtName")));
 			ds.setPrice(Float
@@ -353,12 +355,12 @@ public class PayBillActivity extends BaseActivity implements
 			ds.setNumber((int) Float.valueOf(
 					m_CallCursor.getString(m_CallCursor
 							.getColumnIndex("number"))).floatValue());
-			ds.setItemNo(Integer.parseInt(m_CallCursor.getString(m_CallCursor
-					.getColumnIndex("ItemNo"))));
+			ds.setItemNo(m_CallCursor.getString(m_CallCursor
+					.getColumnIndex("ItemNo")));
 
 			ds.setCustomerNo(Integer.parseInt(m_CallCursor
 					.getString(m_CallCursor.getColumnIndex("customNo"))));
-			ds.setBILLID(i + "");// 不要删
+			// ds.setBILLID(i + "");// 不要删
 			try {
 				sub_CallCursor = new sql_SaleRecord()
 						.recordlist3("select count(*) from Customer  where  ItemNo='"
@@ -391,7 +393,7 @@ public class PayBillActivity extends BaseActivity implements
 			break;
 		// add_all
 		case R.id.table_pop_credit:
-			splitAll();
+			// splitAll();
 			if (isSplit) {
 				printbill.setClickable(true);
 				printbill.setBackground(getResources().getDrawable(
@@ -438,8 +440,8 @@ public class PayBillActivity extends BaseActivity implements
 		String ItemNo;
 		Cursor m_CallCursor, sub_CallCursor;
 		m_CallCursor = new sql_SaleRecord()
-				.recordlist3("select * from SaleRecord as s1 join saleandpdt as s2 " +
-						"on s1.itemNo=s2.salerecordId where s1.deskName = '"
+				.recordlist3("select * from SaleRecord as s1 join saleandpdt as s2 "
+						+ "on s1.itemNo=s2.salerecordId where s1.deskName = '"
 						+ Constant.table_id + "' and s2.status1!='Finish'");
 		while (m_CallCursor.moveToNext()) {
 			ItemNo = m_CallCursor.getString(m_CallCursor
@@ -456,25 +458,20 @@ public class PayBillActivity extends BaseActivity implements
 
 	}
 
-	private void splitAll() {
-		List<d_SaleRecord> dSaleRecords = getSaleRecordsAll();
-
-		d_Customer dCus = new d_Customer();
-
-		sql_Customer sCustomer = new sql_Customer();
-		for (int i = 0; i < views.size(); i++)
-			for (int j = 0; j < dSaleRecords.size(); j++) {
-				if (dSaleRecords.get(j).getCustomerNo() == 0) {
-					dCus.setCustomNo(i);
-					dCus.setItemNo(dSaleRecords.get(j).getItemNo());
-					sCustomer.save(dCus);
-				}
-			}
-	}
+	/*
+	 * private void splitAll() { List<d_SaleRecord> dSaleRecords =
+	 * getSaleRecordsAll();
+	 * 
+	 * d_Customer dCus = new d_Customer();
+	 * 
+	 * sql_Customer sCustomer = new sql_Customer(); for (int i = 0; i <
+	 * views.size(); i++) for (int j = 0; j < dSaleRecords.size(); j++) { if
+	 * (dSaleRecords.get(j).getCustomerNo() == 0) { dCus.setCustomNo(i);
+	 * dCus.setItemNo(dSaleRecords.get(j).getId()); sCustomer.save(dCus); } } }
+	 */
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
 		switch (resultCode) { // resultCode为回传的标记，我在B中回传的是RESULT_OK
 		case RESULT_OK:
@@ -560,12 +557,15 @@ public class PayBillActivity extends BaseActivity implements
 			sendMessage("--------------Bill" + j + "-----------\n");
 			Cursor m_CallCursor;
 			m_CallCursor = new sql_SaleRecord()
-					.recordlist3("select s2.pdtName,s2.price,s2.number,s.itemNo,c.customNo from " +
-			"SaleRecord as s join Customer as c on s.itemNo=c.ItemNo " +
-			"SaleRecord as s join saleandpdt as s2 on s.itemNo=s2.salerecordId " +
-			"where s.deskName = '"+ Constant.table_id
-			+ "' and s2.status1!='Finish' and c.customNo='" + j + "'");
-			
+					.recordlist3("select s2.pdtName,s2.price,s2.number,s.itemNo,c.customNo from "
+							+ "SaleRecord as s join Customer as c on s.itemNo=c.ItemNo "
+							+ "SaleRecord as s join saleandpdt as s2 on s.itemNo=s2.salerecordId "
+							+ "where s.deskName = '"
+							+ Constant.table_id
+							+ "' and s2.status1!='Finish' and c.customNo='"
+							+ j
+							+ "'");
+
 			while (m_CallCursor.moveToNext()) {
 				mService.write(byteB);
 
@@ -598,7 +598,6 @@ public class PayBillActivity extends BaseActivity implements
 		finish();
 
 	}
-
 
 	/**
 	 * 补齐不足长度
@@ -678,7 +677,7 @@ public class PayBillActivity extends BaseActivity implements
 	private void openBox() {
 		byte[] byteA = new byte[] { 0x1B, 0x70, 0x00, (byte) 0xFE, (byte) 0xFE };
 		mService.write(byteA);
-		
+
 		if (mService != null)
 			mService.stop();
 	}

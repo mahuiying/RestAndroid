@@ -1,6 +1,5 @@
 package com.utopia.Model;
 
-import java.util.Date;
 
 public class d_Cashier {
 	
@@ -12,14 +11,14 @@ public class d_Cashier {
 	private String userCode;		//员工id
 	private String cashierId;		//收银机id
 	private String status;			//五个状态 ， 放入in 、 支出 out、 早晨初始化 init、 晚上最后结算check 、 老板purchase
-	
+	private String otherspec;
 	
 	public d_Cashier() {
 		super();
 	}
 	public d_Cashier(int id, float currentMoney, float initMoney,
 			float changeMoney, String createTime, String userCode,
-			String cashierId, String status) {
+			String cashierId, String status,String otherspec) {
 		super();
 		this.id = id;
 		this.currentMoney = currentMoney;
@@ -29,6 +28,7 @@ public class d_Cashier {
 		this.userCode = userCode;
 		this.cashierId = cashierId;
 		this.status = status;
+		this.otherspec = otherspec;
 	}
 	public int getId() {
 		return id;
@@ -77,6 +77,12 @@ public class d_Cashier {
 	}
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	public String getOtherspec() {
+		return otherspec;
+	}
+	public void setOtherspec(String otherspec) {
+		this.otherspec = otherspec;
 	}
 	
 	

@@ -27,11 +27,11 @@ public class DateAdapter extends BaseAdapter {
 	private List<d_Product> lstDate;
 	public static final int SIZE = 27;
 
-	private String md5;
+	private String salerecordId;
 
 	public DateAdapter(Context mContext, List<d_Product> list, int page,
-			TextView textview_menuDesc, String md5) {
-		this.md5 = md5;
+			TextView textview_menuDesc, String salerecordId) {
+		this.salerecordId = salerecordId;
 		this.context = mContext;
 		lstDate = new ArrayList<d_Product>();
 		int i = page * SIZE;
@@ -87,7 +87,9 @@ public class DateAdapter extends BaseAdapter {
 						Bundle mBundle = new Bundle();
 						mBundle.putSerializable("d_Product",
 								(d_Product) v.getTag());
-						mBundle.putString("md5", md5);
+						mBundle.putString("salerecordId", salerecordId);
+						mBundle.putInt("tag", 0);//标志该菜为所要点的菜，而不是已点过的要修改的菜
+						mBundle.putInt("id", 0);
 						intent.putExtras(mBundle);
 						context.startActivity(intent);
 

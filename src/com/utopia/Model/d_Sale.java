@@ -1,7 +1,8 @@
 package com.utopia.Model;
 
+
 public class d_Sale {
-	private int itemNo;        //交易的编号
+	private String itemNo;        //交易的编号
 	private String closeTime;  //桌子交易开始时间
 	private String createTime; //交易结束的时间
 	private String deskName;   //桌子名
@@ -19,14 +20,14 @@ public class d_Sale {
     private String waiter; //服务员
     private float cashTotal; //现金钱数
     private float cardTotal; //刷卡钱数
-   // private int customNo;
+    private int customerId;
     public d_Sale(){
     	
     }
     
-    public d_Sale(int itemNo,String closeTime,String createTime,String deskName,String otherSpec,String otherSpecNo1,
+    public d_Sale(String itemNo,String closeTime,String createTime,String deskName,String otherSpec,String otherSpecNo1,
     		String otherSpecNo2,String status,String dept,float subtotal,float tiptotal,float total,float initTotal,
-    		float rebate,float tax,String waiter,float cashTotal,float cardTotal){
+    		float rebate,float tax,String waiter,float cashTotal,float cardTotal,int customerId){
     	this.itemNo=itemNo;
     	this.closeTime=closeTime;
     	this.createTime=createTime;
@@ -45,23 +46,23 @@ public class d_Sale {
     	this.waiter=waiter;
     	this.cashTotal=cashTotal;
     	this.cardTotal=cardTotal;
-    	//this.customNo=customNo;
+      	this.customerId=customerId;
     }
     
-//    public int getCustomNo() {
-//		return customNo;
-//	}
-//
-//	public void setCustomNo(int customNo) {
-//		this.customNo = customNo;
-//	}
+    public int getCustomerId() {
+		return customerId;
+	}
 
-	public int getItemNo() {
+	public void setCustomerId(int customNo) {
+		this.customerId = customNo;
+	}
+
+	public String getItemNo() {
 		return itemNo;
 	}
 
 	
-	public void setItemNo(int itemNo) {
+	public void setItemNo(String itemNo) {
 		this.itemNo = itemNo;
 	}
 
@@ -225,7 +226,16 @@ public class d_Sale {
 				+ getClass() + ", hashCode()=" + hashCode() + ", toString()="
 				+ super.toString() + "]";
 	}
-
-   
+	
+	public String getString(){
+		return "{\"itemNo\":\""+itemNo+"\",\"closeTime\":\""+closeTime+"\",\"createTime\":\""+createTime+"\",\"deskName\":\""+deskName+
+				"\",\"otherSpec\":\""+otherSpec+"\",\"otherSpecNo1\":\""+otherSpecNo1+"\",\"otherSpecNo2\":\""+otherSpecNo2+"\",\"status\":\""+status+
+				"\",\"dept\":\""+dept+"\",\"subTotal\":"+subtotal+",\"tipTotal\":"+tiptotal+",\"total\":"+total+
+				",\"initTotal\":"+initTotal+",\"rebate\":"+rebate+",\"taxTotal\":"+tax+",\"waiter\":\""+waiter+
+				"\",\"cashTotal\":"+cashTotal+",\"cardTotal\":"+cardTotal+",\"customerId\":1"+
+				"}";
+		
+	}
+     
 
 }

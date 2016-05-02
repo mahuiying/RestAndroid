@@ -1,6 +1,5 @@
 package com.utopia.widget;
 
-import static android.view.WindowManager.LayoutParams.TYPE_SYSTEM_ERROR;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,9 +8,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-import com.utopia.Service.HomeKeyLocker;
-import com.utopia.activity.LoginActivity;
-import com.utopia.activity.OrdersAcitvity;
 import com.utopia.activity.R;
 
 public class MyDialog extends Dialog implements

@@ -16,8 +16,6 @@ import android.widget.Toast;
 import com.utopia.Adapter.PrinterAdapter;
 import com.utopia.Service.BluetoothService;
 import com.utopia.activity.R;
-import com.utopia.activity.R.id;
-import com.utopia.activity.R.layout;
 
 @TargetApi(Build.VERSION_CODES.CUPCAKE)
 public class pop_printer implements View.OnClickListener {

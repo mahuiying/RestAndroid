@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.utopia.Model.d_Area;
 import com.utopia.Model.d_Contact;
 import com.utopia.utils.Constant;
 
@@ -33,12 +32,37 @@ public class sql_Contact {
 	}
 
 	public void save(d_Contact contact) {
-		String sql = " insert into Contact(Name,Phone,Add_Number,Add_Street,Add_Apt,Add_City,Add_State,Add_Code,Card_Number,Card_Date,Card_Cvv,Card_Fname,Card_Lname,Be_Notes,Not_Note) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		db.execSQL(sql,
-				new Object[] { contact.getName(),
-				contact.getPhone(),contact.getAdd_Number(),contact.getAdd_Street(),contact.getAdd_Apt(),contact.getAdd_City(),contact.getAdd_State(),contact.getAdd_Code(),
-				contact.getCard_Number(),contact.getCard_Date(),contact.getCard_Cvv(),contact.getCard_Fname(),contact.getCard_Lname(),contact.getBe_Notes(),contact.getNot_Notes() });
+		String sql0 = "select Name,Phone from Contact where Name='"
+				+ contact.getName() + "' and Phone='" + contact.getPhone()
+				+ "'";
+		Cursor mCursor = db.rawQuery(sql0, null);
+		if (mCursor.moveToFirst()) {
+			String sql1 = "update Contact set Add_Number=?,Add_Street=?,Add_Apt=?,Add_City=?,Add_State=?,Add_Code=?,Card_Number=?"
+					+ "Card_Date=?,Card_Cvv=?,Card_Fname=?,Card_Lname=?,Be_Notes=?,Not_Note=?";
+			db.execSQL(
+					sql1,
+					new Object[] { contact.getAdd_Number(),
+							contact.getAdd_Street(), contact.getAdd_Apt(),
+							contact.getAdd_City(), contact.getAdd_State(),
+							contact.getAdd_Code(), contact.getCard_Number(),
+							contact.getCard_Date(), contact.getCard_Cvv(),
+							contact.getCard_Fname(), contact.getCard_Lname(),
+							contact.getBe_Notes(), contact.getNot_Notes() });
+		} else {
+			String sql = " insert into Contact(Name,Phone,Add_Number,Add_Street,Add_Apt,Add_City,Add_State,Add_Code,Card_Number,Card_Date,Card_Cvv,Card_Fname,Card_Lname,Be_Notes,Not_Note) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			db.execSQL(sql,
+					new Object[] { contact.getName(), contact.getPhone(),
+							contact.getAdd_Number(), contact.getAdd_Street(),
+							contact.getAdd_Apt(), contact.getAdd_City(),
+							contact.getAdd_State(), contact.getAdd_Code(),
+							contact.getCard_Number(), contact.getCard_Date(),
+							contact.getCard_Cvv(), contact.getCard_Fname(),
+							contact.getCard_Lname(), contact.getBe_Notes(),
+							contact.getNot_Notes() });
+		}
+		mCursor.close();
 	}
+
 	/**
 	 * 返回所有餐桌区域信息
 	 * 
@@ -51,11 +75,32 @@ public class sql_Contact {
 		String sql = "select * from Contact";
 		Cursor localCursor = this.db.rawQuery(sql, null);
 		while (localCursor.moveToNext()) {
-			contact = new d_Contact(localCursor.getInt(localCursor.getColumnIndex("id")),localCursor.getString(localCursor.getColumnIndex("Name")), localCursor.getString(localCursor.getColumnIndex("Phone")), localCursor.getString(localCursor.getColumnIndex("Add_Number")) ,
-					localCursor.getString(localCursor.getColumnIndex("Add_Street")) , localCursor.getString(localCursor.getColumnIndex("Add_Apt") ), localCursor.getString(localCursor.getColumnIndex("Add_City")) ,
-					localCursor.getString(localCursor.getColumnIndex("Add_State")) , localCursor.getString(localCursor.getColumnIndex("Add_Code") ), localCursor.getString(localCursor.getColumnIndex("Card_Number") ),
-					localCursor.getString(localCursor.getColumnIndex("Card_Date")) , localCursor.getString(localCursor.getColumnIndex("Card_Cvv") ), localCursor.getString(localCursor.getColumnIndex("Card_Fname") ),
-					localCursor.getString(localCursor.getColumnIndex("Card_Lname") ), localCursor.getString(localCursor.getColumnIndex("Be_Notes")) , localCursor.getString(localCursor.getColumnIndex("Not_Note")) );
+			contact = new d_Contact(
+					localCursor.getInt(localCursor.getColumnIndex("id")),
+					localCursor.getString(localCursor.getColumnIndex("Name")),
+					localCursor.getString(localCursor.getColumnIndex("Phone")),
+					localCursor.getString(localCursor
+							.getColumnIndex("Add_Number")),
+					localCursor.getString(localCursor
+							.getColumnIndex("Add_Street")),
+					localCursor.getString(localCursor.getColumnIndex("Add_Apt")),
+					localCursor.getString(localCursor
+							.getColumnIndex("Add_City")),
+					localCursor.getString(localCursor
+							.getColumnIndex("Add_State")), localCursor
+							.getString(localCursor.getColumnIndex("Add_Code")),
+					localCursor.getString(localCursor
+							.getColumnIndex("Card_Number")),
+					localCursor.getString(localCursor
+							.getColumnIndex("Card_Date")), localCursor
+							.getString(localCursor.getColumnIndex("Card_Cvv")),
+					localCursor.getString(localCursor
+							.getColumnIndex("Card_Fname")),
+					localCursor.getString(localCursor
+							.getColumnIndex("Card_Lname")), localCursor
+							.getString(localCursor.getColumnIndex("Be_Notes")),
+					localCursor.getString(localCursor
+							.getColumnIndex("Not_Note")));
 			contacts.add(contact);
 		}
 		localCursor.close();

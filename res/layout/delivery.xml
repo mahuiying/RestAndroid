@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EEEEEE"
+    android:background="#767676"
     android:orientation="vertical" >
 
     <include
@@ -12,24 +12,23 @@
     <com.utopia.widget.SlideMenu
         android:id="@+id/slide_menu"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+        android:layout_height="fill_parent"
+        android:background="#5E5E5E" >
 
         <include layout="@layout/layout_menu" />
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:background="#EEEEEE"
+            android:background="#5E5E5E"
             android:orientation="horizontal" >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="#FFFFFF"
+                android:background="#5E5E5E"
                 android:orientation="vertical" >
-
-               
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -46,8 +45,9 @@
                     <GridView
                         android:id="@+id/delivery_grid"
                         android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="fill_parent"
                         android:layout_marginTop="10dip"
+                        android:background="#5E5E5E"
                         android:gravity="center_horizontal"
                         android:horizontalSpacing="10.0dip"
                         android:numColumns="8"

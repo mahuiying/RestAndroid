@@ -2,7 +2,8 @@ package com.utopia.Base;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List; 
+import java.util.List;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,7 +13,6 @@ import android.support.v4.app.FragmentActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
@@ -43,7 +43,7 @@ public abstract class BaseActivity extends FragmentActivity {
 		mScreenWidth = metric.widthPixels;
 		mScreenHeight = metric.heightPixels;
 		mDensity = metric.density;
-		Log.i("tag",getClass().getSimpleName());
+		Log.i("tag", getClass().getSimpleName());
 	}
 
 	@Override
@@ -51,7 +51,6 @@ public abstract class BaseActivity extends FragmentActivity {
 		clearAsyncTask();
 		super.onDestroy();
 	}
- 
 
 	/** 初始化视图 **/
 	protected abstract void initViews();
@@ -62,7 +61,6 @@ public abstract class BaseActivity extends FragmentActivity {
 	public void putAsyncTask(AsyncTask<Void, Void, Boolean> asyncTask) {
 		mAsyncTasks.add(asyncTask.execute());
 	}
-	
 
 	protected void clearAsyncTask() {
 		Iterator<AsyncTask<Void, Void, Boolean>> iterator = mAsyncTasks

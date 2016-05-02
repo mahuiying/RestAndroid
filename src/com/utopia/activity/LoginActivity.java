@@ -18,13 +18,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.utopia.Base.BaseActivity;
 import com.utopia.Dao.sql_Test;
@@ -36,12 +33,10 @@ import com.utopia.Model.d_Desk;
 import com.utopia.Model.d_MenuType;
 import com.utopia.Model.d_Product;
 import com.utopia.Model.d_Sale;
-import com.utopia.Model.d_SaleRecord;
 import com.utopia.Model.d_Saleandpdt;
 import com.utopia.Model.d_Staff;
 import com.utopia.Model.d_Tax;
 import com.utopia.Service.UpdateManager;
-import com.utopia.activity.InternetBroadcastReceiver.NetworkChangeReceiver;
 import com.utopia.utils.Constant;
 import com.utopia.utils.DateUtils;
 import com.utopia.utils.ExitApplication;
@@ -50,11 +45,12 @@ import com.utopia.utils.JsonResolveUtils;
 import com.utopia.widget.MyDialog;
 import com.utopia.widget.MyProgressView;
 
+@SuppressLint("HandlerLeak")
 public class LoginActivity extends BaseActivity implements View.OnClickListener {
 
 	private IntentFilter intentFilter;
 	private NetworkChangeReceiver networkChangeReceiver;
-	//private boolean connection_tag;
+	// private boolean connection_tag;
 	private int time = 0;
 	private InitSql initsql;
 
@@ -62,7 +58,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 	private int[] password = new int[] { R.id.passwd_1, R.id.passwd_2,
 			R.id.passwd_3, R.id.passwd_4 };
 
-	private AlertDialog.Builder builder;
+	// private AlertDialog.Builder builder;
 	private AlertDialog dialog;
 
 	private MyProgressView mTasksView;
@@ -73,7 +69,7 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 	private TextView tv_title;
 	private TextView tv_content;
 	private MyDialog mBackDialog;
-   
+
 	private BluetoothAdapter mBtAdapter;
 	private StringBuilder pwd = new StringBuilder("");
 
@@ -88,39 +84,38 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 			Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 			startActivity(intent);
 		}
-		
-		//Log.i("tag",DateUtils.getDateEN().substring(11, 13)+"小时");
-		initEvents();
-		intentFilter=new IntentFilter();
-		intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
-		networkChangeReceiver=new NetworkChangeReceiver();
-		registerReceiver(networkChangeReceiver,intentFilter);
-		// 后台读入
-	//	Constant.DATABASE_PATH = getApplicationContext().getFilesDir()
-//				.getAbsolutePath();
-//		new Constant().copy(this);
-//		try {
-//			Thread.sleep(500L);
-//		} catch (InterruptedException localInterruptedException) {
-//			localInterruptedException.printStackTrace();
-//		}
-//
-	//	versionUpdate();
-//
-//		initsql = new InitSql();
-	//	update_All();
-		
-		
-	}
-public class NetworkChangeReceiver extends BroadcastReceiver{
 
-		
-		//public static boolean connection_tag=false;//网络连接的标志，连接为真
+		// Log.i("tag",DateUtils.getDateEN().substring(11, 13)+"小时");
+		initEvents();
+		intentFilter = new IntentFilter();
+		intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+		networkChangeReceiver = new NetworkChangeReceiver();
+		registerReceiver(networkChangeReceiver, intentFilter);
+		// 后台读入
+		// Constant.DATABASE_PATH = getApplicationContext().getFilesDir()
+		// .getAbsolutePath();
+		// new Constant().copy(this);
+		// try {
+		// Thread.sleep(500L);
+		// } catch (InterruptedException localInterruptedException) {
+		// localInterruptedException.printStackTrace();
+		// }
+		//
+		// versionUpdate();
+		//
+		// initsql = new InitSql();
+		// update_All();
+
+	}
+
+	public class NetworkChangeReceiver extends BroadcastReceiver {
+
+		// public static boolean connection_tag=false;//网络连接的标志，连接为真
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			ConnectivityManager connectionManager= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);  
-			NetworkInfo networkInfo=connectionManager.getActiveNetworkInfo();
-			if(networkInfo!=null && networkInfo.isConnectedOrConnecting()){
+			ConnectivityManager connectionManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+			NetworkInfo networkInfo = connectionManager.getActiveNetworkInfo();
+			if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
 				Constant.DATABASE_PATH = getApplicationContext().getFilesDir()
 						.getAbsolutePath();
 				new Constant().copy(LoginActivity.this);
@@ -134,38 +129,44 @@ public class NetworkChangeReceiver extends BroadcastReceiver{
 
 				initsql = new InitSql();
 				update_All();
-				
-				Log.i("tag","有网络。。。。。");
-			}else{
-				AlertDialog.Builder dialogBuilder=new AlertDialog.Builder(context);
+
+				Log.i("tag", "有网络。。。。。");
+			} else {
+				AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(
+						context);
 				dialogBuilder.setTitle("Warning");
 				dialogBuilder.setMessage("network is unavailable");
 				dialogBuilder.setCancelable(false);
-				dialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-					
-						//ExitApplication.getInstance().exit();
-						LoginActivity.this.startActivity(new Intent(android.provider.Settings.ACTION_WIFI_SETTINGS)); 
-						
-					}
-				});
-				AlertDialog alertDialog=dialogBuilder.create();
-				alertDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
+				dialogBuilder.setPositiveButton("OK",
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+
+								// ExitApplication.getInstance().exit();
+								LoginActivity.this
+										.startActivity(new Intent(
+												android.provider.Settings.ACTION_WIFI_SETTINGS));
+
+							}
+						});
+				AlertDialog alertDialog = dialogBuilder.create();
+				alertDialog.getWindow().setType(
+						WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
 				alertDialog.show();
-				//connection_tag=false;
+				// connection_tag=false;
 			}
 		}
 
 	}
 
-@Override
-protected void onDestroy() {
-	// TODO Auto-generated method stub
-	super.onDestroy();
-	unregisterReceiver(networkChangeReceiver);
-}
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		unregisterReceiver(networkChangeReceiver);
+	}
+
 	private void versionUpdate() {
 		putAsyncTask(new AsyncTask<Void, Void, Boolean>() {
 			@Override
@@ -208,14 +209,13 @@ protected void onDestroy() {
 			return;
 		}
 		if (paramView.getId() == R.id.but_set) {
-			//new pop_setpwd(LoginActivity.this, paramView); // 改成英文
+			// new pop_setpwd(LoginActivity.this, paramView); // 改成英文
 			return;
 		}
-		/*if (paramView.getId() == R.id.but_test) {
-			mCurrentProgress = 0;
-			initToast();
-			return;
-		}*/
+		/*
+		 * if (paramView.getId() == R.id.but_test) { mCurrentProgress = 0;
+		 * initToast(); return; }
+		 */
 
 		if (paramView.getId() == R.id.loginTrans) {/*
 													 * Intent i = new
@@ -231,7 +231,7 @@ protected void onDestroy() {
 					R.drawable.login_num2);
 			switch (paramView.getId()) {
 			case R.id.loginnum0:
-				//在pwd字符串后面加上后面括号里的字符串
+				// 在pwd字符串后面加上后面括号里的字符串
 				pwd.append("0");
 				break;
 			case R.id.loginnum1:
@@ -265,9 +265,9 @@ protected void onDestroy() {
 			time++;
 		}
 	}
-    // staffs进入的员工（包括经理）的信息
+
+	// staffs进入的员工（包括经理）的信息
 	private List<d_Staff> staffs = new ArrayList<d_Staff>();
-	
 
 	private void login() {
 		if (pwd.toString().length() != 4) {
@@ -336,16 +336,21 @@ protected void onDestroy() {
 					if (Constant.currentStaff.getPriority() == 3) {// 厨师登录
 						LoginActivity.this.startActivity(new Intent(
 								LoginActivity.this, CookActivity.class));
-
 					} else if (Constant.currentStaff.getPriority() == 1
 							|| Constant.currentStaff.getPriority() == 0) {
+//						LoginActivity.this.startActivity(new Intent(
+//								LoginActivity.this, ShiftReportActivity.class));
+						Constant.clockInTime = DateUtils.getDateEN();
 						LoginActivity.this.startActivity(new Intent(
-								LoginActivity.this, ShiftReportActivity.class));
+								LoginActivity.this, DeskMenuActivity.class));
 					} else {
 						Constant.clockInTime = DateUtils.getDateEN();
-
+//....2016 3 3
+//						LoginActivity.this.startActivity(new Intent(
+//								LoginActivity.this, DeviceListActivity.class));
+						
 						LoginActivity.this.startActivity(new Intent(
-								LoginActivity.this, DeviceListActivity.class));
+								LoginActivity.this, DeskMenuActivity.class));
 					}
 				}
 			}
@@ -362,29 +367,33 @@ protected void onDestroy() {
 
 			@Override
 			protected Boolean doInBackground(Void... params) {
-			
+
 				String numbers1[] = new JsonResolveUtils(LoginActivity.this)
 						.getTest().split(",");
-				String numbers2[] = new sql_Test().getNumber().split(",");		
-				Log.i("tag","hhhhhhhhhhhhhhhhhh "+numbers1.length+" HHHHHHHHHHHHHHH");
-				for(int i=0;i<numbers1.length;i++){
-					Log.i("tag","numbers1 "+numbers1[i]);
-					Log.i("tag","numbers2 "+numbers2[i]);
-					
+				// Log.i("tag", "----"+new
+				// JsonResolveUtils(LoginActivity.this).getTest());
+				String numbers2[] = new sql_Test().getNumber().split(",");
+				Log.i("tag", "hhhhhhhhhhhhhhhhhh " + numbers1.length
+						+ " HHHHHHHHHHHHHHH");
+				for (int i = 0; i < numbers1.length; i++) {
+					Log.i("tag", "numbers[" + i + "]" + numbers1[i]);
+					Log.i("tag", "numbers[" + i + "]" + numbers2[i]);
+
 				}
-				
-				try {//判断后台数据有没有更改
+
+				try {// 判断后台数据有没有更改
 					if (!numbers1[0].equals(numbers2[0])) {
 						new InitSql().clearnAllMenu();
 						// ////////////////////////////////////////
 						List<d_Product> menus = new JsonResolveUtils(
 								LoginActivity.this).getMenus();
+						Log.i("tag", "menus.size=" + menus.size());
 						for (int i = 0; i < menus.size(); i++) {
 							initsql.saveMenu(menus.get(i));
 							Thread.sleep(50);
 						}
 						Log.e("Menu", menus.size() + "");
-						//Log.i("tag")
+						// Log.i("tag")
 					}
 					// ////////////////////////////////////////
 					if (!numbers1[1].equals(numbers2[1])) {
@@ -399,7 +408,7 @@ protected void onDestroy() {
 						Log.e("desks", desks.size() + "");
 					}
 					// /////////////////////////////////////////
-					//后台数据到本地数据库Area表中
+					// 后台数据到本地数据库Area表中
 					if (!numbers1[2].equals(numbers2[2])) {
 						new InitSql().clearnAllArea();
 						List<d_Area> areas = new JsonResolveUtils(
@@ -424,7 +433,7 @@ protected void onDestroy() {
 						}
 						Log.e("menuTypes", menuTypes.size() + "");
 					}
-					
+
 					// 添加用户
 					/*
 					 * Thread.sleep(1000); List<d_Staff> staff = new
@@ -442,53 +451,52 @@ protected void onDestroy() {
 						}
 						Log.e("taxs", taxs.size() + "");
 					}
-					////////更新销售记录SaleRecord////////////////////////
+					// //////更新销售记录SaleRecord////////////////////////
 					if (!numbers1[5].equals(numbers2[5])) {
 						new InitSql().clearnAllSaleRecord();
+
 						List<d_Sale> sales = new JsonResolveUtils(
 								LoginActivity.this).getSaleRecords();
-						for (int i = 0; i < sales.size(); i++) {
+						int i;
+						for (i = 0; i < sales.size(); i++) {
 							initsql.saveSaleRecords(sales.get(i));
+
 							Thread.sleep(50);
+							Log.i("tag", sales.get(i).getItemNo());
 						}
+						Log.i("tag", "sales.size()" + sales.size());
+
 						Log.e("saleRecords", sales.size() + "");
 					}
-					///////更新销售记录明细saleandpdt//////////////////
-					if(!numbers1[9].equals(numbers2[9])){
-						new InitSql().clearnAllSaleanddpt();
-						List<d_Saleandpdt> saleandpdt = new JsonResolveUtils(
-								LoginActivity.this).getSaleandpdt();
-						for (int i = 0; i < saleandpdt.size(); i++) {
-							initsql.saveSaleandpdt(saleandpdt.get(i));
-							Thread.sleep(50);
-						}
-						Log.e("saleandpdt", saleandpdt.size() + "");
-					}
+
 					// //////////////更新账单/////////////////
 					if (!numbers1[6].equals(numbers2[6])) {
 						new InitSql().clearnAllBill();
 						List<d_Bill> bills = new JsonResolveUtils(
 								LoginActivity.this).getBills();
+						// Log.i("tag",bills.get(0).getSalerecordId());
 						for (int i = 0; i < bills.size(); i++) {
 							initsql.saveBill(bills.get(i));
 							// Log.e("Bill","Subtotal" +
 							// bills.get(i).getSubtotal()
 							// + "Tips" +bills.get(i).getTip() + "Trans" +
 							// bills.size());
+
 							Thread.sleep(50);
 						}
 						Log.e("bills", bills.size() + "");
 					}
 					// ////////////////////////////////////////
-					if (!numbers1[7].equals(numbers2[7])) {
-						new InitSql().clearnAllCashier();
-						List<d_Cashier> cashiers = new JsonResolveUtils(
-								LoginActivity.this).getCashiers();
-						for (int i = 0; i < cashiers.size(); i++) {
-							initsql.saveCashier(cashiers.get(i));
-						}
-						Log.e("cashiers", cashiers.size() + "");
-					}
+//					if (!numbers1[7].equals(numbers2[7])) {
+//						new InitSql().clearnAllCashier();
+//						List<d_Cashier> cashiers = new JsonResolveUtils(
+//								LoginActivity.this).getCashier();
+//						for (int i = 0; i < cashiers.size(); i++) {
+//							initsql.saveCashier(cashiers.get(i));
+//							Thread.sleep(50);
+//						}
+//						Log.e("cashiers", cashiers.size() + "");
+//					}
 					// ////////////////////////////////////////
 					if (!numbers1[8].equals(numbers2[8])) {
 						new InitSql().clearnAllContact();
@@ -496,10 +504,24 @@ protected void onDestroy() {
 								LoginActivity.this).getContacts();
 						for (int i = 0; i < contacts.size(); i++) {
 							initsql.saveContact(contacts.get(i));
+							Thread.sleep(50);
 						}
 						Log.e("contacts", contacts.size() + "");
 					}
-		
+					// /////更新销售记录明细saleandpdt//////////////////
+					if (!numbers1[9].equals(numbers2[9])) {
+						new InitSql().clearnAllSaleanddpt();
+						List<d_Saleandpdt> saleandpdt = new JsonResolveUtils(
+								LoginActivity.this).getSaleandpdt();
+						Log.i("tag", "saleandpdt:" + saleandpdt.size() + "");
+						int i;
+						for (i = 0; i < saleandpdt.size(); i++) {
+							initsql.saveSaleandpdt(saleandpdt.get(i));
+
+							Thread.sleep(50);
+						}
+						Log.e("saleandpdt", saleandpdt.size() + "");
+					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -517,20 +539,17 @@ protected void onDestroy() {
 		});
 	}
 
-	private void initToast() {
-		LayoutInflater inflater1 = getLayoutInflater();
-		View view1 = inflater1.inflate(R.layout.readytoast,
-				(ViewGroup) findViewById(R.id.toast_layout));
-		tv_content = (TextView) view1.findViewById(R.id.txt_context);
-		tv_title = (TextView) view1.findViewById(R.id.txt_title);
-		mTasksView = (MyProgressView) view1.findViewById(R.id.tasks_view);
-		builder = new AlertDialog.Builder(LoginActivity.this);
-		builder.setView(view1);
-		dialog = builder.create();
-		new Thread(new ProgressRunable()).start();
-		dialog.show();
-
-	}
+	/**
+	 * private void initToast() { LayoutInflater inflater1 =
+	 * getLayoutInflater(); View view1 = inflater1.inflate(R.layout.readytoast,
+	 * (ViewGroup) findViewById(R.id.toast_layout)); tv_content = (TextView)
+	 * view1.findViewById(R.id.txt_context); tv_title = (TextView)
+	 * view1.findViewById(R.id.txt_title); mTasksView = (MyProgressView)
+	 * view1.findViewById(R.id.tasks_view); builder = new
+	 * AlertDialog.Builder(LoginActivity.this); builder.setView(view1); dialog =
+	 * builder.create(); new Thread(new ProgressRunable()).start();
+	 * dialog.show(); }
+	 */
 
 	class ProgressRunable implements Runnable {
 

@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="73dp"
+    android:layout_height="79dp"
     android:background="@null" >
 
     <LinearLayout
         android:id="@id/m_ll1"
         android:layout_width="240dp"
-        android:layout_height="73dp"
-        android:background="@drawable/orange_bg"
-         >
+        android:layout_height="79dp"
+        android:background="@drawable/orange_bg" >
 
         <TextView
             android:id="@id/tv_qty1"
@@ -29,6 +28,5 @@
             android:textColor="@color/black"
             android:textSize="20sp" />
     </LinearLayout>
-
 
 </LinearLayout>

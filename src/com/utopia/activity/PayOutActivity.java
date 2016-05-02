@@ -1,10 +1,7 @@
 package com.utopia.activity;
 
-import java.util.Date;
-
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle; 
+import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -12,7 +9,6 @@ import android.widget.TextView;
 import com.utopia.Base.BaseActivity;
 import com.utopia.Dao.sql_Cashier;
 import com.utopia.Model.d_Cashier;
-import com.utopia.Service.HomeKeyLocker;
 import com.utopia.utils.Constant;
 import com.utopia.utils.DateUtils;
 import com.utopia.utils.ExitApplication;

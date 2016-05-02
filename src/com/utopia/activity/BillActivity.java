@@ -121,7 +121,7 @@ public class BillActivity extends BaseActivity implements OnClickListener {
 		localBill.setBillId(md5);
 		localBill.setWaiter(Constant.userCode);
 		localBill.setSubtotal(Float.parseFloat(subTotal));
-		localBill.setTax(Integer.parseInt(tax));
+		localBill.setTaxTotal(Integer.parseInt(tax));
 		localBill.setTotal(Float.parseFloat(total));
 		localBill.setCreateTime(DateUtils.getDateEN());
 		localBill.setDistant(Float.parseFloat(discount)); 

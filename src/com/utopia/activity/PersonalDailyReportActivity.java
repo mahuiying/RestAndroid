@@ -60,7 +60,7 @@ public class PersonalDailyReportActivity extends BaseActivity implements
 		
 		for(int i = 0 ; i < bills.size(); i++){
 			t_bill = bills.get(i);
-			if(t_bill.getTax()==1){//credit
+			if(t_bill.getTaxTotal()==1){//credit
 				net_sales_credit+=t_bill.getTotal();
 				transactions_credit += t_bill.getDistant();
 				tips_credit += t_bill.getTip();

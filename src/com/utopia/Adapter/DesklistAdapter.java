@@ -4,8 +4,8 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.TextView; 
-import com.utopia.Dao.sql_desk; 
+import android.widget.TextView;
+import com.utopia.Dao.sql_desk;
 import java.util.ArrayList;
 
 public class DesklistAdapter extends BaseAdapter {
@@ -18,8 +18,7 @@ public class DesklistAdapter extends BaseAdapter {
 	}
 
 	public void addItemByList() {
-		this.mList = new sql_desk()
-				.recordlist4("select keyname from keycode");
+		this.mList = new sql_desk().recordlist4("select keyname from keycode");
 	}
 
 	public void execsql(String paramString) {

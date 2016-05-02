@@ -1,14 +1,13 @@
 package com.utopia.Dialog;
 
-import com.utopia.activity.PayBillActivity;
-import com.utopia.activity.R;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
+import com.utopia.activity.PayBillActivity;
+import com.utopia.activity.R;
  
 /*
  * 输入现金
